@@ -12,10 +12,11 @@ Read our [contribution guidelines](https://github.com/pfurini/genropy-core/blob/
 ## Original License
 Copyright (c) 2007-2017 Softwell Sas - Milano - Italy
 
+### Authors
 - Giovanni Porcari
-- Francesco Cavazzana
 - Saverio Porcari
 - Francesco Porcari
+- Michele Bertoldi
 
 Licensed under the GNU LGPL License, Version 2.1, see LICENSE file for details.
 
