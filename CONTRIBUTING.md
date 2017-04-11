@@ -103,7 +103,7 @@ accept code without this.
 * Build your changes locally to ensure all the tests pass
 
 	```shell
-	karma start
+	[TODO]
 	```
 
 * Push your branch to GitHub:
