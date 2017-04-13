@@ -1,10 +1,10 @@
 # -*- coding: UTF-8 -*-
 #--------------------------------------------------------------------------
-# package       : GenroPy core - see LICENSE for details
-# module gnrstuctures : this implements the functional syntax to fill a Genro Bag
-# Copyright (c) : 2004 - 2007 Softwell sas - Milano 
+# package       : Genropy core - see LICENSE for details
+# module gnrbag : an advanced data storage system
+# Copyright (c) : 2004 - 2017 Softwell sas - Milano 
 # Written by    : Giovanni Porcari, Michele Bertoldi
-#                 Saverio Porcari, Francesco Porcari , Francesco Cavazzana
+#                 Saverio Porcari, Francesco Porcari
 #--------------------------------------------------------------------------
 #This library is free software; you can redistribute it and/or
 #modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,8 @@
 #You should have received a copy of the GNU Lesser General Public
 #License along with this library; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+
+
 
 from gnr.core.gnrbag import Bag, BagResolver
 from gnr.core.gnrlang import GnrObject,GnrException
