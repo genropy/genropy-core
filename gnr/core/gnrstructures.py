@@ -1,29 +1,28 @@
 # -*- coding: UTF-8 -*-
-#--------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # package       : Genropy core - see LICENSE for details
 # module gnrbag : an advanced data storage system
-# Copyright (c) : 2004 - 2017 Softwell sas - Milano 
+# Copyright (c) : 2004 - 2017 Softwell sas - Milano
 # Written by    : Giovanni Porcari, Michele Bertoldi
 #                 Saverio Porcari, Francesco Porcari
-#--------------------------------------------------------------------------
-#This library is free software; you can redistribute it and/or
-#modify it under the terms of the GNU Lesser General Public
-#License as published by the Free Software Foundation; either
-#version 2.1 of the License, or (at your option) any later version.
+# --------------------------------------------------------------------------
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
 
-#This library is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-#Lesser General Public License for more details.
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
 
-#You should have received a copy of the GNU Lesser General Public
-#License along with this library; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
-
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 
 from gnr.core.gnrbag import Bag, BagResolver
-from gnr.core.gnrlang import GnrObject,GnrException
+from gnr.core.gnrlang import GnrObject, GnrException
 from gnr.core.gnrdict import GnrDict
 from gnr.core import gnrstring
 from gnr.core.gnrdecorator import deprecated
@@ -32,95 +31,96 @@ from gnr.core.gnrdecorator import deprecated
 def valid_children(**kwargs):
     """TODO"""
     def decore(func):
-        setattr(func,'_valid_children',kwargs)
+        setattr(func, '_valid_children', kwargs)
         return func
     return decore
+
 
 class GnrStructData(Bag):
     """This is a subclass of the :class:`Bag <gnr.core.gnrbag.Bag>` class that implements
     functional syntax for adding particular elements to the tree"""
-    default_childname= '*_#'
+    default_childname = '*_#'
     exceptions = dict(invalid_child_tag='Wrong insert child %(tag)s',
-                        missing_child_tag='Missing child %(tag)s',
-                        already_inserted_child_tag='You have already inserted %(maxval)s %(tag)s',
-                        missing_mandatory_children='Missing mandatory children: %(mandatory_children)s')
+                      missing_child_tag='Missing child %(tag)s',
+                      already_inserted_child_tag='You have already inserted %(maxval)s %(tag)s',
+                      missing_mandatory_children='Missing mandatory children: %(mandatory_children)s')
 
     def makeRoot(cls, source=None, protocls=None):
         """Build the root instance for the given class and return it
-        
+
         :param source: the filepath of the xml file
         :param protocls: the structure class"""
         if protocls:
             instance = protocls()
         else:
-            instance = cls() #create an instance of cls
-        if source: #load from xml file
+            instance = cls()  # create an instance of cls
+        if source:  # load from xml file
             instance.load(source)
         instance.setBackRef()
         return instance
-        
+
     makeRoot = classmethod(makeRoot)
-        
+
     def backwardNodebyAttr(self, attrname, checker=None):
         """TODO
-        
+
         :param attrname: TODO
         :param checker: TODO"""
         if checker is None:
-            checker= lambda v:True
-        if isinstance(checker,basestring):
-            checker = lambda v:v==checker
+            checker = lambda v: True
+        if isinstance(checker, basestring):
+            checker = lambda v: v == checker
         if self._parentNode:
-            if attrname in self._parentNode.attr and checker(self._parentNode.attr[attrname])  :
+            if attrname in self._parentNode.attr and checker(self._parentNode.attr[attrname]):
                 return self._parentNode
             return self._parent.backwardNodebyAttr(attrname)
-        
+
     def _get_attaches(self):
         if self.parent == None:
             return self
         else:
             return self.parent
-    
+
     @deprecated
     def _get_joiner(self):
         if self.parent == None:
             return self
         else:
             return self.parent
-            
+
     _ = property(_get_joiner)
-        
+
     def _get_root(self):
         if self.parent == None:
             return self
         else:
             return self.parent.root
-            
+
     root = property(_get_root)
 
-    def _parseValidChildrenValues(self,valid_children):
+    def _parseValidChildrenValues(self, valid_children):
         mandatoryTags = dict()
-        for tag,validpars in valid_children.items():
+        for tag, validpars in valid_children.items():
             validpars = '0:' if validpars is True else validpars
-            if isinstance(validpars,int):
+            if isinstance(validpars, int):
                 validpars = str(validpars)
-            l = validpars.split(':') if isinstance(validpars,basestring) else validpars
-            if len(l)==1:
+            l = validpars.split(':') if isinstance(validpars, basestring) else validpars
+            if len(l) == 1:
                 minval = validpars
                 maxval = minval
             else:
-                minval,maxval = l
-            valid_children[tag] = (minval,maxval)
+                minval, maxval = l
+            valid_children[tag] = (minval, maxval)
             if minval and int(minval):
                 mandatoryTags[tag] = int(minval)
         return mandatoryTags
 
     def validate(self):
         def validateNode(node):
-            method = getattr(self,node.attr.get('tag'),None)
+            method = getattr(self, node.attr.get('tag'), None)
             if not method:
                 return
-            valid_children = getattr(method,'_valid_children',None)
+            valid_children = getattr(method, '_valid_children', None)
             if not valid_children:
                 return
             mandatoryTags = self._parseValidChildrenValues(valid_children)
@@ -130,7 +130,7 @@ class GnrStructData(Bag):
                     return
                 validpars = valid_children.get(tag)
                 if not validpars:
-                    raise GnrException(self.exceptions['invalid_child_tag'] %dict(tag=tag))
+                    raise GnrException(self.exceptions['invalid_child_tag'] % dict(tag=tag))
                 mandatory_val = mandatoryTags.get(tag)
                 if mandatory_val:
                     mandatory_val -= 1
@@ -138,20 +138,22 @@ class GnrStructData(Bag):
                         mandatoryTags[tag] = mandatory_val
                     else:
                         mandatoryTags.pop(tag)
-                minval,maxval = validpars
-                if maxval and len(n.value.filter(lambda n: n.attr['tag'] == tag))>=int(maxval):
-                    raise GnrException(self.exceptions['already_inserted_child_tag'] %dict(tag=tag,maxval=maxval))
+                minval, maxval = validpars
+                if maxval and len(n.value.filter(lambda n: n.attr['tag'] == tag)) >= int(maxval):
+                    raise GnrException(
+                        self.exceptions['already_inserted_child_tag'] % dict(tag=tag,
+                                                                             maxval=maxval))
             if mandatoryTags:
-                raise GnrException(self.exceptions['missing_mandatory_children'] %dict(mandatory_children=','.join(mandatoryTags.keys())))
+                raise GnrException(self.exceptions['missing_mandatory_children'] % dict(
+                    mandatory_children=','.join(mandatoryTags.keys())))
         self.walk(validateNode)
- 
 
-
-    def child(self, tag, childname=None, childcontent=None, content=None,_parentTag=None, _attributes=None,
-              _returnStruct=True, _position=None,_childcounter=False, **kwargs):
+    def child(self, tag, childname=None, childcontent=None, content=None, _parentTag=None,
+              _attributes=None, _returnStruct=True, _position=None, _childcounter=False,
+              **kwargs):
         """Set a new item of the ``tag`` type into the current structure. Return the new structure
         if content is ``None``, else the parent
-        
+
         :param tag: structure type
         :param name: structure name
         :param content: optional structure content
@@ -159,7 +161,7 @@ class GnrStructData(Bag):
         :param _attributes: TODO
         :param childname: the :ref:`childname`
         """
-        where = self   
+        where = self
         original_childname = childname
         childname = childname or self.default_childname
 
@@ -177,9 +179,9 @@ class GnrStructData(Bag):
                     item = self.__class__()
                     where[label] = item
                 where = where[label]
-                
+
         childname = childname.replace('*', tag or 'notag').replace('#', str(len(where)))
-        
+
         if childcontent is None and _returnStruct:
             childcontent = self.__class__()
             result = childcontent
@@ -192,45 +194,52 @@ class GnrStructData(Bag):
                 _parentTag = gnrstring.splitAndStrip(_parentTag, ',')
             actualParentTag = where.getAttr('', tag)
             if not actualParentTag in _parentTag:
-                raise GnrStructureError('%s "%s" cannot be inserted in a %s' % (tag, childname, actualParentTag))
+                raise GnrStructureError('%s "%s" cannot be inserted in a %s' %
+                                        (tag, childname, actualParentTag))
         if not original_childname:
-            where.addItem(childname, childcontent, tag=tag, _position=_position,_attributes=kwargs)
+            where.addItem(childname, childcontent, tag=tag,
+                          _position=_position, _attributes=kwargs)
             return result
         if childname in where and where[childname] != '' and where[childname] is not None:
             if where.getAttr(childname, 'tag') != tag:
                 raise GnrStructureError(
-                        'Cannot change %s from %s to %s' % (childname, where.getAttr(childname, 'tag'), tag))
+                    'Cannot change %s from %s to %s' % (childname,
+                                                        where.getAttr(childname, 'tag'),
+                                                        tag))
             else:
+                # default kwargs don't clear old attributes
                 kwargs = dict(
-                        [(k, v) for k, v in kwargs.items() if v != None]) # default kwargs don't clear old attributes
+                    [(k, v) for k, v in kwargs.items() if v != None])
                 result = where[childname]
                 result.attributes.update(**kwargs)
         else:
-            where.setItem(childname, childcontent, tag=tag, _position=_position,_attributes=kwargs)
+            where.setItem(childname, childcontent, tag=tag,
+                          _position=_position, _attributes=kwargs)
         return result
-        
+
     def save(self, path):
         """Saves the structure as an XML file
-        
+
         :param path: destination path of the saved file"""
         self.toXml(path, typeattrs=False)
-        
+
     def load(self, path):
         """Loads the structure from an XML file
-        
+
         :param path: path of the file to load"""
         cls = self.__class__
         b = Bag()
         b.fromXml(path, bagcls=cls, empty=cls)
         self[''] = self.merge(b)
-        
+
+
 class GnrStructObj(GnrObject):
     """It is a tree of :class:`GnrObjects <gnr.core.gnrlang.GnrObject>` classes that it is auto-builded starting from
     an instance of the :class:`GnrStructData` class"""
-        
+
     def makeRoot(cls, parent, structnode, objclassdict, **kwargs):
         """Instantiate the root element
-        
+
         :param cls: TODO
         :param parent: TODO
         :param structnode: TODO
@@ -239,10 +248,11 @@ class GnrStructObj(GnrObject):
             structnode = structnode.getNode('#0')
         tag = structnode.getAttr('tag').lower()
         if tag in objclassdict:
-            return objclassdict[tag](structnode=structnode, parent=parent, objclassdict=objclassdict, **kwargs)
-            
+            return objclassdict[tag](structnode=structnode, parent=parent,
+                                     objclassdict=objclassdict, **kwargs)
+
     makeRoot = classmethod(makeRoot)
-            
+
     def __init__(self, tag=None, structnode=None, parent=None, name=None,
                  attrs=None, children=None, objclassdict=None, **kwargs):
         self.structnode = structnode
@@ -267,7 +277,7 @@ class GnrStructObj(GnrObject):
                 self.root.objdict[self.id] = self
         else:
             self.attributes = attrs or {}
-            
+
         self.attributes.update(kwargs)
         buildChildren = self._captureChildren(children)
         self.init(**kwargs)
@@ -276,13 +286,13 @@ class GnrStructObj(GnrObject):
         if children and buildChildren:
             self.buildChildren(children)
         self.afterChildrenCreation()
-        
+
     def _captureChildren(self, children):
         return True
-        
+
     def buildChildren(self, children):
         """TODO
-        
+
         :param children: TODO"""
         objclassdict = self.root.objclassdict
         for child in children:
@@ -298,17 +308,17 @@ class GnrStructObj(GnrObject):
                         self.childalias[alias] = obj
             else:
                 pass
-                
+
     def _get_metadata(self):
         if not hasattr(self, '_metadata'):
             self._metadata = Bag()
         return self._metadata
-        
+
     metadata = property(_get_metadata)
-        
+
     def buildChild(self, childnode, **kwargs):
         """Build a child
-        
+
         :param childnode: the child node"""
         objclassdict = self.root.objclassdict
         tag = childnode.getAttr('tag').lower()
@@ -317,48 +327,48 @@ class GnrStructObj(GnrObject):
 
     def deleteChild(self, name):
         """Delete a child
-        
+
         :param name: the child name"""
         child = self.children.pop(name)
         child.deleteChildren()
         child.onDelete()
-        
+
     def onDelete(self):
         """Hook method on delete action"""
         pass
-        
+
     def deleteChildren(self):
         """TODO"""
         for k in self.children.keys():
             self.deleteChild(k)
-            
+
     def afterChildrenCreation(self):
         """Hook method after children creation"""
         pass
-        
+
     def newChild(self, obj):
         """Hook method on creation of a new child
-        
+
         :param obj: TODO"""
         pass
-        
+
     def _get_root(self):
         if self.parent == None:
             return self
         else:
             return self.parent.root
-            
+
     root = property(_get_root)
-            
+
     def getById(self, id):
         """TODO
-        
+
         :param id: the id of the object"""
         return self.root.objdict.get(id, None)
-            
+
     def getItem(self, path, default=None, static=False):
         """Build a child
-        
+
         :param path: TODO
         :param default: TODO
         :param static: TODO"""
@@ -373,12 +383,12 @@ class GnrStructObj(GnrObject):
             return obj.get(label, default)
         else:
             return default
-            
+
     __getitem__ = getItem
-        
+
     def get(self, name, default=None):
         """Build a child
-        
+
         :param name: TODO
         :param default: TODO"""
         name = name.lower()
@@ -388,19 +398,19 @@ class GnrStructObj(GnrObject):
             obj = self.childalias[name]
         else:
             obj = default
-            
+
         if isinstance(obj, BagResolver):
             return obj()
         else:
             return obj
-            
+
     def getResolver(self, name, default=None):
         """Build a child
-        
+
         :param name: TODO
         :param default: TODO"""
         return self.children.get(name.lower(), default=default)
-        
+
     def _htraverse(self, pathlist, **kwargs):
         curr = self
         if isinstance(pathlist, basestring):
@@ -414,89 +424,90 @@ class GnrStructObj(GnrObject):
             label = pathlist.pop(0)
         if not pathlist:
             return curr, label
-            
+
         newcurr = curr.get(label)
         isbag = hasattr(newcurr, '_htraverse')
         if isbag:
             return newcurr._htraverse(pathlist)
         else:
             return newcurr, '.'.join(pathlist)
-            
+
     def __len__(self):
         return len(self.children)
-        
+
     def __iter__(self):
         return self.children.__iter__()
-        
+
     def __contains__(self, name):
         return (name.lower() in self.children) or (name.lower() in self.childalias)
-        
+
     def items(self):
         """Same of ``items`` method's dict, applied on the ``children`` attribute"""
         return self.children.items()
-        
+
     def keys(self):
         """Same of ``keys`` method's dict, applied on the ``children`` attribute"""
         return self.children.keys()
-        
+
     def values(self):
         """Same of ``values`` method's dict, applied on the ``children`` attribute"""
         return self.children.values()
-        
+
     def _set_structnode(self, structnode):
         if structnode != None:
             self.__structnode = structnode
         else:
             self.__structnode = None
-            
+
     def _get_structnode(self):
         if self.__structnode:
             return self.__structnode
-            
+
     structnode = property(_get_structnode, _set_structnode)
-        
+
     def _set_parent(self, parent):
         if parent != None:
             self._parent = parent
         else:
             self._parent = None
-            
+
     def _get_parent(self):
         if hasattr(self, '_parent'):
             return self._parent
-            
+
     parent = property(_get_parent, _set_parent)
-        
+
     def init(self):
         """TODO"""
         pass
-        
+
     def newChild(self, child):
         """TODO
-        
+
         :param child: TODO"""
         pass
-        
+
     def afterChildrenCreation(self):
         """TODO"""
         pass
-        
+
     def asBag(self):
         """TODO"""
         return StructObjResolver(self)
-        
+
+
 class StructObjResolver(BagResolver):
     def resolverDescription(self):
         """TODO"""
         return 'tree'
-        
+
     def init(self, obj):
         """TODO
-        
+
         :param obj: TODO"""
         self.obj = obj
         self.alreadyCalled = False
-        
+
     def expired(self):
         """TODO"""
         if self.alreadyCalled:
@@ -507,7 +518,7 @@ class StructObjResolver(BagResolver):
                 return False
         else:
             return True
-            
+
     def __call__(self):
         self.alreadyCalled = True
         result = Bag()
@@ -515,37 +526,41 @@ class StructObjResolver(BagResolver):
         obj = self.obj
         if isinstance(obj, BagResolver):
             obj = obj()
-            
+
         for name, x in obj.items():
             if isinstance(x, GnrStructObj):
                 tag = x.getTag()
                 attr = {'tag': tag}
                 attr.update(x.attributes)
                 result.setItem(name, StructObjResolver(x), _attributes=attr)
-            elif isinstance(x, Bag) or isinstance(x,
-                                                  BagResolver):# attributes are lost, we should take from parent node, but it can be a structobj...
+            # attributes are lost, we should take from parent node, but it can be a structobj...
+            elif isinstance(x, Bag) or isinstance(x, BagResolver):
                 result.setItem(name, StructObjResolver(x), tag=x.getTag())
             else:
                 result.setItem(name, x, tag=x.getTag())
         return result
-        
+
+
 class TestStructModule(object):
     """TODO"""
+
     def __init__(self):
         self.struct = GnrStructData.root()
         self.structdict = {}
         self.roots = {}
-        
+
     def buildOne(self, name, path):
         """TODO
-        
+
         :param name: TODO
         :param path: TODO"""
         node = self.struct.getNode(path)
         self.roots[name] = GnrStructObj.root(node, self.structdict)
-        
+
+
 class GnrStructureError(Exception):
     pass
-        
+
+
 if __name__ == '__main__':
     pass
