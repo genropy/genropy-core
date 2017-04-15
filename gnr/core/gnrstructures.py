@@ -163,8 +163,6 @@ class GnrStructData(Bag):
         original_childname = childname
         childname = childname or self.default_childname
 
-       #if childname and childname != '*_#':
-       #    kwargs['_childname'] = childname
         if childcontent is None:
             childcontent = content
         if _attributes:
@@ -447,7 +445,6 @@ class GnrStructObj(GnrObject):
         
     def _set_structnode(self, structnode):
         if structnode != None:
-            #self.__structnode=weakref.ref(structnode)
             self.__structnode = structnode
         else:
             self.__structnode = None
@@ -455,13 +452,11 @@ class GnrStructObj(GnrObject):
     def _get_structnode(self):
         if self.__structnode:
             return self.__structnode
-            #return self.__structnode()
             
     structnode = property(_get_structnode, _set_structnode)
         
     def _set_parent(self, parent):
         if parent != None:
-            #self._parent=weakref.ref(parent)
             self._parent = parent
         else:
             self._parent = None
@@ -499,14 +494,12 @@ class StructObjResolver(BagResolver):
         """TODO
         
         :param obj: TODO"""
-        #self.obj = weakref.ref(obj)
         self.obj = obj
         self.alreadyCalled = False
         
     def expired(self):
         """TODO"""
         if self.alreadyCalled:
-            #obj = self.obj()
             obj = self.obj
             if isinstance(obj, BagResolver):
                 return obj.expired()
@@ -518,9 +511,7 @@ class StructObjResolver(BagResolver):
     def __call__(self):
         self.alreadyCalled = True
         result = Bag()
-        #result.clear()
         result.obj = self.obj
-        #obj = self.obj()
         obj = self.obj
         if isinstance(obj, BagResolver):
             obj = obj()

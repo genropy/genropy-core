@@ -21,7 +21,6 @@
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 import inspect
-#import weakref
 import sys, imp, traceback, datetime
 import os.path
 import thread
@@ -68,7 +67,6 @@ def tracebackBag(limit=None):
         tb_bag['lineno'] = lineno
         tb_bag['name'] = name
         tb_bag['line'] = line
-        #tb_bag['locals'] = Bag(f.f_locals.items())
         loc = Bag()
         for k,v in f.f_locals.items():
             try:
@@ -178,7 +176,6 @@ def debug_call_new(attribute_list=None, print_time=False):
                 print 10 * ' ' + 27 * '-' + 'kwargs' + 27 * '-' + 10 * ' '
                 print kw or (hasattr(arg[0], 'kwargs') and arg[0].kwargs)
                 print '-' * 80
-            #time_list.append((func.func_name, (t2 - t1) * 1000.0))
             return res
         return wrapper
 
@@ -427,8 +424,6 @@ class GnrImportedModule(object):
         :param memberName: TODO"""
         return getattr(self.module, memberName, None)
         
-    #    def getImportedMember(self, memberName):
-    #        return ImportedMember(self, memberName)
         
     def load(self):
         """TODO"""
@@ -436,7 +431,6 @@ class GnrImportedModule(object):
             self.module = imp.load_source(self.name, self.path)
         else:
             self.module = imp.load_compiled(self.name, self.path)
-            #globals()[self.name]=self.module
             
     def update(self):
         """TODO"""
@@ -551,11 +545,9 @@ class GnrRemeberableAddOn(GnrAddOn):
         
         :param name: TODO"""
         objid = id(self)
-        #self._gnr_members__[objid]=weakref.ref(self)
         self._gnr_members__[objid] = self
         if name:
             old = self._gnr_namedmembers__.get(name, None)
-            #if old: self._gnr_members__[old]()._gnr_remembered_as__=None
             if old: self._gnr_members__[old]._gnr_remembered_as__ = None
             self._gnr_remembered_as__ = name
             self._gnr_namedmembers__[name] = objid
@@ -564,7 +556,6 @@ class GnrRemeberableAddOn(GnrAddOn):
         """TODO
         
         :param cls: TODO"""
-        #return [v() for v in cls._gnr_members__.values()]
         return [v for v in cls._gnr_members__.values()]
         
     rememberedMembers = classmethod(rememberedMembers)
@@ -573,7 +564,6 @@ class GnrRemeberableAddOn(GnrAddOn):
         """TODO
         
         :param cls: TODO"""
-        #return dict([(name,cls._gnr_members__[objid]()) for  name,objid in cls._gnr_namedmembers__.items()])
         return dict([(name, cls._gnr_members__[objid]) for  name, objid in cls._gnr_namedmembers__.items()])
         
     rememberedNamedMembers = classmethod(rememberedNamedMembers)
@@ -584,7 +574,6 @@ class GnrRemeberableAddOn(GnrAddOn):
         :param cls: TODO
         :param name: TODO"""
         objid = cls._gnr_namedmembers__.get(name, None)
-        #if objid:return cls._gnr_members__[objid]()
         if objid: return cls._gnr_members__[objid]
         
     rememberedGet = classmethod(rememberedGet)
@@ -947,9 +936,6 @@ def safeStr(self, o):
     else:
         return str(o)
         
-#def checkGarbage():
-#    gc.collect()
-#    assert not gc.garbage
 
 class GnrExpandible(object):
     """TODO"""
@@ -963,7 +949,6 @@ class GnrExpandible(object):
         """
         if not expander in self.__expanders:
             expander.parent = self
-            #expander.parent=weakref.ref(self)
             self.__expanders.insert(0, expander)
             
     def delExpander(self, expander):

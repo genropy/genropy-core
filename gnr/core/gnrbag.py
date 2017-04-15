@@ -55,9 +55,7 @@ to interact with BagNode instances inside a Bag.
           
 .. note:: Some methods have the "square-brackets notation": it is a shorter notation for the method"""
 from __future__ import print_function
-#import weakref
 import copy
-#import cPickle as pickle
 from datetime import datetime, timedelta
 from gnr.core import gnrstring
 from gnr.core.gnrclasses import GnrClassCatalog
@@ -85,10 +83,6 @@ class BagAsXml(object):
         
 class BagValidationError(BagException):
     pass
-    # def __init__(self, errcode, value, message):
-    # self.errcode=errcode
-    #self.value = str(value)
-    #self.message = message
     
 class BagDeprecatedCall(BagException):
     def __init__(self, errcode, message):
@@ -143,13 +137,11 @@ class BagNode(object):
             
     def _get_parentbag(self):
         return self._parentbag
-            #return self._parentbag()
             
     def _set_parentbag(self, parentbag):
         self._parentbag = None
         if parentbag != None:
             if parentbag.backref or True:
-                #self._parentbag=weakref.ref(parentbag)
                 self._parentbag = parentbag
                 if hasattr(self._value,'_htraverse') and parentbag.backref:
                     self._value.setBackRef(node=self, parent=parentbag)
@@ -334,8 +326,6 @@ class BagNode(object):
         """
         if not _updattr:
             self.attr.clear()
-            #if self.locked:
-            #raise BagNodeException("Locked node %s" % self.label)
         if self._node_subscribers and trigger:
             oldattr = dict(self.attr)
         if attr:
@@ -438,7 +428,6 @@ class Bag(GnrObject):
         if parent is None:
             self._parent = None
         else:
-            #self._parent=weakref.ref(parent)
             self._parent = parent
 
     parent = property(_get_parent, _set_parent)
@@ -457,7 +446,6 @@ class Bag(GnrObject):
         raise BagDeprecatedCall('Deprecated syntax', 'use .parentNode instead of .node')
         if node != None:
             self._parentNode = node
-            #self._parentNode = weakref.ref(node)
         else:
             self._parentNode = None
 
@@ -465,14 +453,12 @@ class Bag(GnrObject):
         raise BagDeprecatedCall('Deprecated syntax', 'use .parentNode instead of .node')
         if self._parentNode != None:
             return self._parentNode
-            #return self._parentNode()
 
     node = property(_get_node, _set_node)
 
     def _set_parentNode(self, node):
         if node != None:
             self._parentNode = node
-            #self._parentNode = weakref.ref(node)
         else:
             self._parentNode = None
 
@@ -737,13 +723,10 @@ class Bag(GnrObject):
                 return None, None
         newcurrnode = curr._nodes[i]
         newcurr = newcurrnode.value #maybe a deferred
-        # if deferred : 
-        #return deferred.addcallback(this.getItem(path rimanente))
         isbag = hasattr(newcurr, '_htraverse')
         if autocreate and not isbag:
             newcurr = curr.__class__()
             self._nodes[i].value = newcurr
-            #curr.__setValue(i,newcurr)
             isbag = True
         if isbag:
             return newcurr._htraverse(pathlist, autocreate=autocreate, returnLastMatch=returnLastMatch)
@@ -1216,7 +1199,6 @@ class Bag(GnrObject):
             if tail_path:
                 node._tail_list =  gnrstring.smartsplit(tail_path.replace('../', '#^.'), '.')
             return node
-            #return None
 
     def getDeepestNode_(self, path=None):
         """This method returns the deepest matching node in the bag and the remaining path of the path.
@@ -1526,11 +1508,6 @@ class Bag(GnrObject):
             _attributes = dict(_attributes or {})
             _validators = dict(_validators or {})
             _attributes.update(kwargs)
-           # for k, v in kwargs.items():
-           #     if k.startswith('validate_'):
-           #         _validators[k[9:]] = v
-           #     else:
-           #         _attributes[k] = v
         if item_path == '' or item_path is True:
             if isinstance(item_value, BagResolver):
                 item_value = item_value()
@@ -1738,9 +1715,6 @@ class Bag(GnrObject):
                 if idx < len(self._nodes): result = idx
 
         else:
-        #f=filter(lambda x: x[1].label==label, enumerate(self._nodes))
-        #if len(f)>0:
-        #result=f[0][0]
             for idx, el in enumerate(self._nodes):
                 if el.label == label:
                     result = idx
@@ -1942,8 +1916,6 @@ class Bag(GnrObject):
         contentType = info.gettype().lower()
         if 'xml' in contentType or 'html' in contentType:
             return urlobj.read(), False, 'xml' #it is an url of type xml
-        #elif 'xsd' in contentType:
-        #    return urlobj.read(), False, 'xsd' #it is an url of type xml
         return source, False, 'direct' #urlresolver
 
     def fromJson(self,json,listJoiner=None):
@@ -2320,14 +2292,12 @@ class BagValidationList(object):
 
     def _set_node(self, node):
         if node != None:
-            #self._node = weakref.ref(node)
             self._node = node
         else:
             self._node = None
 
     def _get_node(self):
         if self._node != None:
-            #return self._node()
             return self._node
 
     node = property(_get_node, _set_node)
@@ -2432,7 +2402,6 @@ class BagValidationList(object):
         :param value: TODO
         :param oldvalue: TODO
         :param parameterString: TODO"""
-        # print value
         return value
 
     def defaultExt (self, value, oldvalue, parameterString):
@@ -2481,13 +2450,11 @@ class BagResolver(object):
     def _get_parentNode(self):
         if hasattr(self,'_parentNode'):
             return self._parentNode
-            #return self._parentNode()
 
     def _set_parentNode(self, parentNode):
         if parentNode == None:
             self._parentNode = None
         else:
-            #self._parentNode = weakref.ref(parentNode)
             self._parentNode = parentNode
 
     parentNode = property(_get_parentNode, _set_parentNode)
@@ -2917,13 +2884,11 @@ class BagResolverNew(object):
             return self._serializerStore
         else:
             return self._serializerStore
-            #return self._serializerStore()
             
     def _set_serializerStore(self, serializerStore):
         if serializerStore is None:
             self._serializerStore = serializerStore
         else:
-            #self._serializerStore = weakref.ref(serializerStore)
             self._serializerStore = serializerStore
             
     serializerStore = property(_get_serializerStore, _set_serializerStore)
@@ -2949,13 +2914,11 @@ class BagResolverNew(object):
     def _get_parentNode(self):
         if hasattr(self,'_parentNode'):
             return self._parentNode
-            #return self._parentNode()
             
     def _set_parentNode(self, parentNode):
         if parentNode == None:
             self._parentNode = None
         else:
-            #self._parentNode = weakref.ref(parentNode)
             self._parentNode = parentNode
             
     parentNode = property(_get_parentNode, _set_parentNode)
@@ -3174,12 +3137,6 @@ class TraceBackResolver(BagResolver):
 
 def testfunc (**kwargs):
     print(kwargs)
-
-#import Pyro.core
-#class PyroBag(Bag, Pyro.core.ObjBase):
-#    def __init__(self):
-#        Bag.__init__(self)
-#        Pyro.core.ObjBase.__init__(self)
 
 if __name__ == '__main__':
     b = Bag()

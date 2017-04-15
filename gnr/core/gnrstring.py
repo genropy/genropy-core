@@ -24,9 +24,7 @@
 from __future__ import print_function
 from gnr.core import six
 import re
-#import cPickle
 import zipfile
-#import StringIO
 import logging
 import datetime
 
@@ -462,11 +460,6 @@ def templateReplace(myString, symbolDict=None, safeMode=False,noneIsBlank=True,l
 
     if hasattr(symbolDict, '_htraverse'):
         Tpl = BagTemplate
-        #if templateBag:
-        #    symbolDict = SubtemplateMapWrapper(symbolDict,templateBag, locale=locale)
-        #elif noneIsBlank:
-        #    symbolDict=NoneIsBlankMapWrapper(symbolDict)
-        #  above is replaced by LocalizedWrapper
     else:
         Tpl = Template
     if conditionalMode and '${' in myString:
@@ -528,7 +521,6 @@ def stringDict(myDict, itemSep=',', argSep='=',isSorted=False):
     """
     keys = myDict.keys()
     if isSorted:
-        #keys = keys.sort() # argh!
         keys = sorted(keys)
     return itemSep.join([argSep.join((str(k), str(myDict[k]))) for k in keys])
     

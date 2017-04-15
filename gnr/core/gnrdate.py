@@ -311,8 +311,6 @@ def decodeDatePeriod(datestr, workdate=None, locale=None, returnDate=False, dtyp
         year, month = dateStart
         if year is None:                      # no year info is given, try to calculate
             year = workdate.year              # default year is this year
-            #if month > workdate.month:        # if the starting month is in the future, change to last year
-            #    year = year - 1
         endyear = None
         endmonth = None
         if isinstance(dateEnd, datetime.date):# dateend is yet decoded
@@ -731,7 +729,6 @@ class TimePeriod(object):
                 intervals = [s.strip() for s in iv.split(',')]
         for interval in intervals:
             self.add(interval)
-        #map(self.add, intervals)
 
     def add(self, item):
         """Add the new TimeInterval or a TimePeriod.

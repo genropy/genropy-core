@@ -78,10 +78,7 @@ class AnalyzingBag(Bag):
                     if not value:
                         attr[lbl] = row[fld]
 
-        #counter = itertools.count()
         for rowind, row in enumerate(data):
-            #rowind = counter.next()
-            #rowind += 1
             currbag = self
             for gr in group_by:
                 label = groupLabel(row, gr)

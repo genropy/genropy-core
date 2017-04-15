@@ -289,7 +289,6 @@ class XlsReader(object):
         
     def __call__(self):
         for line in self.linegen:
-            #row = [self.sheet.cell_value(r, c) for c in range(self.ncols)]
             yield GnrNamedList(self.index, [c for i,c in enumerate(line) if i in self.colindex])
             
 
@@ -333,23 +332,6 @@ class GnrNamedList(object):
     def __contains__(self, what):
         return what in self._index
         
-    #def __getattribute__(self, x):
-    #    if type(x) != int:
-    #        x = self._index[x]
-    #    try:
-    #        return list.__getattribute__(self, x)
-    #    except:
-    #        if x > len(self._index):
-    #            raise
-
-    #def __delattr__(self,x):
-    #    if type(x) != int:
-    #        x = self._index[x]
-    #    try:
-    #        return list.__delattr__(self, x)
-    #    except:
-    #        if x > len(self._index):
-    #            raise
         
     def __setitem__(self, x, v):
         if not isinstance(x, int):

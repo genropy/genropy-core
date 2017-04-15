@@ -75,7 +75,6 @@ class BagFromXml(object):
                 if l[1].args[0] == 'not well-formed (invalid token)':
                     nerror = nerror + 1
                     linepos, colpos = (l[1]._locator.getLineNumber() - 1, l[1]._locator.getColumnNumber())
-                    #print "xml error %i at line %i, col %i: trying to recover..." % (nerror, linepos, colpos)
                     if fromFile:
                         f = open(source, 'r')
                         source = f.read()
@@ -88,7 +87,6 @@ class BagFromXml(object):
                     testmode = True
                 else:
                     raise
-                    #raise _BagXmlException(source, l[1].args[0])
         if testmode:
             result = self.do_build(source, fromFile, catalog=catalog, bagcls=bagcls, empty=empty)
         return result
@@ -187,12 +185,6 @@ class _SaxImporter(sax.handler.ContentHandler):
 
     def characters(self, s):
         self.valueList.append(s)
-       #if s == '\n': self.valueList.append(s)
-       ##s=s.strip()
-       #if not self.valueList or self.valueList[-1] == '\n':
-       #    s = s.lstrip()
-       #s = s.rstrip('\n')
-       #if s != '': self.valueList.append(s)
 
     def endElement(self, tagLabel):
         value = self.getValue(dtype = self.currType)
@@ -205,8 +197,6 @@ class _SaxImporter(sax.handler.ContentHandler):
                         value = self.catalog.fromText(value, self.currType)
                     except:
                         import sys
-                        #print sys.exc_info()[1]
-                        #print value
                         value = None
         if self.currArray: #handles an array
             if self.currArray != tagLabel: # array's content
@@ -254,7 +244,6 @@ class BagToXml(object):
         nodeattr = dict(node.attr)
         local_namespaces = [k[6:] for k in nodeattr.keys() if k.startswith('xmlns:')]
         current_namespaces = namespaces+local_namespaces
-        #filter(lambda k: k.startswith('xmlns:'), nodeattr.keys())
 
         if '__forbidden__' in nodeattr:
             return ''
@@ -271,20 +260,8 @@ class BagToXml(object):
             result = self.buildTag(node.label,
                                    self.bagToXmlBlock(nodeValue,namespaces=current_namespaces), 
                                    nodeattr, '', xmlMode=True,localize=False,namespaces=namespaces)
-
-
         elif isinstance(nodeValue, BagAsXml):
             result = self.buildTag(node.label, nodeValue, nodeattr, '', xmlMode=True,namespaces=namespaces)
-
-        #elif ((isinstance(nodeValue, list) or isinstance(nodeValue, dict))):
-        #    nodeValue = gnrstring.toJson(nodeValue)
-        #    result = self.buildTag(node.label, nodeValue, node.attr)
-        #elif nodeValue and (isinstance(nodeValue, list) or isinstance(nodeValue, tuple)):
-        #    result = self.buildTag(node.label,
-        #                           '\n'.join([self.buildTag('C', c) for c in nodeValue]),
-        #                           node.attr, cls='A%s' % self.catalog.getClassKey(nodeValue[0]),
-        #                           xmlMode=True)
-        
         elif self.mode4d and (nodeValue and (isinstance(nodeValue, list) or isinstance(nodeValue, tuple))):
             if node.label[:3] in ('AR_','AL_','AT_','AD_','AH_','AB_'):
                 cls4d = node.label[:2] # if variable name specify array type, use it
@@ -393,12 +370,9 @@ class BagToXml(object):
         :param attributes: TODO
         :param cls: TODO
         :param xmlMode: TODO"""
-        #if value == None:
-        #    value = ''
         t = cls
         if not t:
             if value != '':
-                #if not isinstance(value, basestring):
                 if isinstance(value, Bag):
                     if self.addBagTypeAttr:
                         value, t = '', 'BAG'
@@ -416,7 +390,6 @@ class BagToXml(object):
                     value = value.decode()
                 except Exception as e:
                     raise e
-                    #raise '%s: %s' % (str(tagName), value)
         if attributes:
             attributes = dict(attributes)
             if self.forcedTagAttr and self.forcedTagAttr in attributes:
@@ -463,23 +436,11 @@ class BagToXml(object):
             print(x)
         if not xmlMode:
             if six.PY2 and not isinstance(value, six.text_type): value = value.decode('UTF-8')
-            #if REGEX_XML_ILLEGAL.search(value): value='<![CDATA[%s]]>' % value
-            #else: value = saxutils.escape((value))
             
             if value.endswith('::HTML'):
                 value = value[:-6]
             elif REGEX_XML_ILLEGAL.search(value):
                 value = saxutils.escape(value)
-                
-                #if REGEX_XML_ILLEGAL.search(value):
-                #    if value.endswith('::HTML'):
-                #        value = value[:-6]
-                #    else:
-                #        value = saxutils.escape(value)
-                #elif value.endswith('::HTML'):
-                #    value = value[:-6]
-                #
-            #if value.find('\n')!=-1: value= '\n%s\n' % value
         if not value and tagName in self.self_closed_tags:
             result = '%s/>' % result
         else:
@@ -507,7 +468,6 @@ class XmlOutputBag(object):
         if not output:
             if filepath:
                 output=open(filepath,'w')
-    
             else:
                 output = six.StringIO()
         self.output = output

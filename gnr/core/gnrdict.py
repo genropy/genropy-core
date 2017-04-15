@@ -114,8 +114,6 @@ class GnrDict(dict):
         
     __repr__ = __str__
         
-    #def __repr__(self):
-    #return "%s ordered on %s" % (dict.__repr__(self), str(self._list))
         
     def clear(self):
         """TODO"""
