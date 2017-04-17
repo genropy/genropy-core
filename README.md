@@ -9,6 +9,20 @@ We are grateful to the community for contributing bug fixes and improvements. Re
 
 Read our [contribution guidelines](https://github.com/pfurini/genropy-core/blob/master/CONTRIBUTING.md) to learn about our development process, how to propose fixes and improvements, and how to test your changes before submitting a pull request.
 
+### Development
+
+To setup development environment:
+
+```
+# Clone sources repository:
+git clone https://github.com/genropy/genropy-core.git
+# Create and activate virtual Python environment:
+python -m venv env
+source env/bin/activate
+# Install requirements into virtual environment
+pip install -r requirements.txt
+```
+
 ## Original License
 Copyright (c) 2007-2017 Softwell Sas - Milano - Italy
 
