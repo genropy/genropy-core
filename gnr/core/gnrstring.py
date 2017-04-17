@@ -212,13 +212,14 @@ BASE_ENCODE = {'/2': '01',
 
 
 def getUntil(myString, chunk, returnOriginal=False):
-    """Search in a string a chunk: if it is present, return all the characters before this chunk.
+    """Search in a string a chunk: if it is present, return all the characters before this
+    chunk.
     If not, return an empty string (or the original one, if returnOriginal is ``True``).
 
     :param myString: the string to be checked
     :param chunk: substring that bounds the result string
-    :param returnOriginal: if ``True``, return the entire string if the chunk is not present in the string.
-                           Default value is ``False``.
+    :param returnOriginal: if ``True``, return the entire string if the chunk is not present
+                           in the string.  Default value is ``False``.
     :returns: a string until a given chunk
 
     >>> getUntil('teststring', 'st')
@@ -467,12 +468,13 @@ def templateReplace(myString, symbolDict=None, safeMode=False, noneIsBlank=True,
 
     :param myString: template string or bag
     :param symbolDict: dictionary that links symbol and values. .
-    :param safeMode: if ``True`` (``False``) uses the ``safe_substitute()`` (``substitute()``) Python method.
-                     Default value is ``False``.
+    :param safeMode: if ``True`` (``False``) uses the ``safe_substitute()`` (``substitute()``)
+                     Python method.  Default value is ``False``.
     :param noneIsBlank: TODO. Default value is ``True``
 
     >>> templateReplace('$foo loves $bar but she loves $aux and not $foo', {'foo':'John','bar':'Sandra','aux':'Steve'})
-    'John loves Sandra but she loves Steve and not John'"""
+    'John loves Sandra but she loves Steve and not John'
+    """
     myString = myString or ''
     templateBag = None
     if hasattr(myString, '_htraverse'):
@@ -610,7 +612,8 @@ def splitAndStrip(myString, sep=',', n=-1, fixed=0):
     :param myString: the string to be splitted
     :param sep: separation character. Default value is ``,``
     :param n: how many split operations must be done on myString. Default value is ``-1``
-    :param fixed: use ``fixed`` if the resulting list must have a fixed length. Default value is ``0``
+    :param fixed: use ``fixed`` if the resulting list must have a fixed length.
+                  Default value is ``0``
 
     >>> splitAndStrip('cola, beer, milk')
     ['cola', 'beer', 'milk']
@@ -775,7 +778,8 @@ def baseEncode(number, base='/16', nChars=None):
 
     :param number: number to encode
     :param base: base of encoding. Default value is ``/16``
-    :param nChar: number of characters of the result. """
+    :param nChar: number of characters of the result.
+    """
     import math
 
     if base in BASE_ENCODE:
@@ -826,7 +830,8 @@ def fromText(mystring, obj, locale=None):
 
     :param mystring: TODO
     :param obj: TODO
-    :param locale: the current locale (e.g: en, en_us, it)"""
+    :param locale: the current locale (e.g: en, en_us, it)
+    """
     # what?
     return parselocal(mystring, obj, locale=locale)
 
@@ -842,7 +847,8 @@ def toText(obj, locale=None, format=None, mask=None, encoding=None, currency=Non
     :param format: TODO
     :param mask: TODO
     :param encoding: The multibyte character encoding you choose
-    :param currency: TODO"""
+    :param currency: TODO
+    """
     if hasattr(obj, '_htraverse') and format:
         return templateReplace(format, obj)
     if isinstance(obj, list) or isinstance(obj, tuple):
@@ -867,7 +873,8 @@ def guessLen(dtype, locale=None, format=None, mask=None, encoding=None):
     :param locale: the current locale (e.g: en, en_us, it)
     :param format: TODO
     :param mask: TODO
-    :param encoding: The multibyte character encoding you choose"""
+    :param encoding: The multibyte character encoding you choose
+    """
     typeSamples = {'B': 'true', 'D': datetime.date(2005, 10, 10), 'H': datetime.time(4, 5),
                    'DH': datetime.datetime.now(),
                    'I': 1234, 'L': 48205294, 'R': 34567.67, 'serial': 123445566}
@@ -888,7 +895,8 @@ def boolean(obj):
 
     (the ``obj`` is lowered before comparing it)
 
-    :param obj: The given object"""
+    :param obj: The given object
+    """
     if obj and isinstance(obj, six.string_types):
         if obj.lower() in ('n', 'no', 'f', 'false', '0'):
             obj = False
@@ -899,7 +907,8 @@ def pickleObject(obj, zipfilename=None):
     """Return the Pickle string for the given object
 
     :param obj: The given object
-    :param zipfilename: TODO"""
+    :param zipfilename: TODO
+    """
     objstr = six.moves.cPickle.dumps(obj)
     if zipfilename:
         objstr = zipString(objstr, zipfilename)
@@ -910,7 +919,8 @@ def unpickleObject(objstr, zipfilename=None):
     """Load an object from a pickle string and return it
 
     :param objstr: The given object string
-    :param zipfilename: TODO"""
+    :param zipfilename: TODO
+    """
     if zipfilename:
         objstr = unzipString(objstr, zipfilename)
     return six.moves.cPickle.loads(objstr)
@@ -920,7 +930,8 @@ def zipString(mystring, filename):
     """Return a zip compressed version of the *mystring* string
 
     :param mystring: The given string
-    :param filename: name of the zipped file"""
+    :param filename: name of the zipped file
+    """
     zipresult = six.StringIO()
     zip = zipfile.ZipFile(zipresult, mode='w', compression=zipfile.ZIP_DEFLATED)
     zip.writestr(filename, mystring)
@@ -934,7 +945,8 @@ def unzipString(mystring, filename):
     """Extract a zip compressed string and return it
 
     :param mystring: the compressed string to decompress
-    :param filename: the name of the unzipped file"""
+    :param filename: the name of the unzipped file
+    """
     zipresult = six.StringIO(mystring)
     zip = zipfile.ZipFile(zipresult, mode='r', compression=zipfile.ZIP_DEFLATED)
     result = zip.read(filename)
@@ -946,7 +958,8 @@ def unzipString(mystring, filename):
 def toJson(obj):
     """TODO
 
-    :param obj: TODO"""
+    :param obj: TODO
+    """
     # non so come testare
     return json.dumps(obj, cls=JsonEncoder)
 
@@ -954,7 +967,8 @@ def toJson(obj):
 def toJsonJS(obj):
     """TODO
 
-    :param obj: TODO"""
+    :param obj: TODO
+    """
     return json.dumps(obj, cls=JsonEncoderJS)
 
 
@@ -962,7 +976,8 @@ def toSecureJsonJS(obj, key=None):
     """TODO
 
     :param obj: TODO
-    :param key: TODO"""
+    :param key: TODO
+    """
     result = json.dumps(obj, cls=JsonEncoderJS)
     if key:
         n = 0
@@ -982,7 +997,8 @@ def toSecureJsonJS(obj, key=None):
 def slugify(value, sep='-'):
     """TODO
 
-    :param value: TODO"""
+    :param value: TODO
+    """
     import unicodedata
     value = six.u(str(value))
     value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
@@ -993,7 +1009,8 @@ def slugify(value, sep='-'):
 def fromJson(obj):
     """TODO
 
-    :param obj: TODO"""
+    :param obj: TODO
+    """
     # non so come testare
     return json.loads(obj)
 
@@ -1002,7 +1019,8 @@ def anyWordIn(wordlist, mystring):
     """Return a list of all the elements included both in ``wordlist`` and in ``mystring``
 
     :param wordlist: the list of words to be searched in ``mystring``
-    :param mystring: the string on which there will be executed the search"""
+    :param mystring: the string on which there will be executed the search
+    """
     return [k for k in wordlist if k in mystring]
 
 
@@ -1015,7 +1033,8 @@ def jsquote(str_or_unicode):
     >>> print jsquote('pippo')
     'pippo'
     >>> print jsquote(u'pippo')
-    'pippo'"""
+    'pippo'
+    """
     if isinstance(str_or_unicode, six.string_types):
         return repr(str_or_unicode.encode('utf-8'))
 

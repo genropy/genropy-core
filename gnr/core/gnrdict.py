@@ -28,7 +28,8 @@ def dictExtract(mydict, prefix, pop=False, slice_prefix=True, is_list=False):
     :param prefix: the prefix of the items you need to extract
     :param pop: removes the items from the sourcedict
     :param slice_prefix: shortens the keys of the output dict removing the prefix
-    :returns: a dict of the items with keys starting with prefix"""
+    :returns: a dict of the items with keys starting with prefix
+    """
     lprefix = len(prefix) if slice_prefix else 0
 
     cb = mydict.pop if pop else mydict.get
@@ -74,7 +75,8 @@ class GnrDict(dict):
         """TODO
 
         :param label: TODO
-        :param default: TODO"""
+        :param default: TODO
+        """
         return dict.get(self, self._label_convert(label), default)
 
     def __getitem__(self, label):
@@ -107,7 +109,8 @@ class GnrDict(dict):
         """TODO
 
         :param key: TODO
-        :param dflt: TODO"""
+        :param dflt: TODO
+        """
         key = self._label_convert(key)
         if key in self._list:
             self._list.remove(key)
@@ -128,7 +131,8 @@ class GnrDict(dict):
         """TODO
 
         :param o: TODO
-        :param removeNone: TODO"""
+        :param removeNone: TODO
+        """
         [self.__setitem__(k, v) for k, v in o.items()]
         if removeNone:
             [self.__delitem__(k) for k, v in o.items() if v == None]
@@ -141,7 +145,8 @@ class GnrDict(dict):
         """TODO
 
         :param key: TODO
-        :param d: TODO"""
+        :param d: TODO
+        """
         key = self._label_convert(key)
         if not key in self:
             self.__setitem__(key, d)
@@ -193,7 +198,8 @@ class GnrDict(dict):
     def sort(self, cmpfunc=None):
         """TODO
 
-        :param cmpfunc: TODO"""
+        :param cmpfunc: TODO
+        """
         self._list.sort(cmpfunc)
 
 

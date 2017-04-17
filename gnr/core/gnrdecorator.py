@@ -39,7 +39,8 @@ def metadata(**kwargs):
 def public_method(*args, **metadata):
     """A decorator. It can be used to mark methods/functions as :ref:`datarpc`\s
 
-    :param func: the function to set as public method"""
+    :param func: the function to set as public metho
+    d"""
     if metadata:
         def decore(func):
             prefix = metadata.pop('prefix', None)
@@ -57,7 +58,8 @@ def public_method(*args, **metadata):
 def websocket_method(*args, **metadata):
     """A decorator. It can be used to mark methods/functions as :ref:`datarpc`\s
 
-    :param func: the function to set as public method"""
+    :param func: the function to set as public method
+    """
     if metadata:
         def decore(func):
             prefix = metadata.pop('prefix', None)
@@ -132,7 +134,8 @@ def extract_kwargs(_adapter=None, _dictkwargs=None, **extract_kwargs):
     * ``adapterName`` is the name of the ``_adapter`` parameter you choose
     * ``_kwargs`` is a mandatory string
 
-    When you call the decorated method, to specify the extracted kwargs you have to use the following syntax::
+    When you call the decorated method, to specify the extracted kwargs you have to use the
+    following syntax::
 
         methodName(adapterName_attributeName=value,adapterName_otherAttributeName=otherValue,...)
 
@@ -146,18 +149,23 @@ def extract_kwargs(_adapter=None, _dictkwargs=None, **extract_kwargs):
 
         Let's define a method called ``my_method``::
 
-            @extract_kwargs(palette=True,dialog=True,default=True)                    # in this line we define three families of kwargs,
-                                                                                      #     indentified by the prefixes:
-                                                                                      #     "palette", "dialog", "default"
-            def my_method(self,pane,table=None,                                       # "standard" parameters
-                          palette_kwargs=None,dialog_kwargs=None,default_kwargs=None, # extracted parameters from kwargs
-                          **kwargs):                                                  # other kwargs
+            # in this line we define three families of kwargs, indentified by the prefixes:
+            # "palette", "dialog", "default"
+            @extract_kwargs(palette=True,dialog=True,default=True)                    
+            def my_method(
+                # "standard" parameters
+                self, pane, table=None,
+                # extracted parameters from kwargs
+                palette_kwargs=None, dialog_kwargs=None, default_kwargs=None,
+                # other kwargs
+                **kwargs):
 
         Now, if you call the ``my_method`` method you will have to use::
 
             pane.another_method(palette_height='200px',palette_width='300px',dialog_height='250px')
 
-        where "pane" is a :ref:`contentPane` to which you have attached your method"""
+        where "pane" is a :ref:`contentPane` to which you have attached your method
+    """
     if _dictkwargs:
         extract_kwargs = _dictkwargs
 
@@ -186,7 +194,8 @@ def extract_kwargs(_adapter=None, _dictkwargs=None, **extract_kwargs):
 def customizable(func):
     """if methods==='foo':
             search: foo_oncalling_xyz
-                     foo_oncalled_xyz"""
+                     foo_oncalled_xyz
+    """
     def customize(page, name, *args, **kwargs):
         for k in dir(page):
             if k.startswith(name) and not k.endswith('_'):
@@ -218,7 +227,8 @@ def deprecated(message=None):
     as deprecated. It will result in a warning being emitted
     when the function is used
 
-    :param func: the function to deprecate"""
+    :param func: the function to deprecate
+    """
     if message:
         message = ': %s' % message
     else:

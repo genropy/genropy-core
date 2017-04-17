@@ -44,7 +44,8 @@ ZERO_TIME = datetime.time(0, 0)
 def isValidValue(value):
     """A check method for the validity of a :class:`Bag <gnr.core.gnrbag.Bag>` value
 
-    :param value: the value to be checked"""
+    :param value: the value to be checked
+    """
     return value in (0, ZERO_TIME)
 
 
@@ -54,7 +55,8 @@ class _BagXmlException(Exception):
 
 class BagFromXml(object):
     """The class that handles the conversion from the XML format to the
-    :class:`Bag <gnr.core.gnrbag.Bag>` class"""
+    :class:`Bag <gnr.core.gnrbag.Bag>` class
+    """
 
     def build(self, source, fromFile, catalog=None, bagcls=Bag, empty=None):
         """TODO
@@ -63,7 +65,8 @@ class BagFromXml(object):
         :param fromFile: TODO
         :param catalog: TODO
         :param bagcls: TODO
-        :param empty: TODO"""
+        :param empty: TODO
+        """
         if not bagcls:
             bagcls = Bag
         done = False
@@ -108,7 +111,8 @@ class BagFromXml(object):
         :param catalog: TODO
         :param bagcls: TODO
         :param empty: TODO
-        :param testmode: TODO"""
+        :param testmode: TODO
+        """
         if not testmode:
             bagImport = _SaxImporter()
         else:
@@ -256,13 +260,15 @@ class _SaxImporter(sax.handler.ContentHandler):
 
 class BagToXml(object):
     """The class that handles the conversion from the :class:`Bag <gnr.core.gnrbag.Bag>`
-    class to the XML format"""
+    class to the XML format.
+    """
 
     def nodeToXmlBlock(self, node, namespaces=None):
         """Handle all the different node types, call the method build tag. Return
         the XML tag that represent the BagNode
 
-        :param node: the :meth:`BagNode <gnr.core.gnrbag.BagNode>`"""
+        :param node: the :meth:`BagNode <gnr.core.gnrbag.BagNode>`
+        """
         nodeattr = dict(node.attr)
         local_namespaces = [k[6:] for k in nodeattr.keys() if k.startswith('xmlns:')]
         current_namespaces = namespaces + local_namespaces
@@ -309,16 +315,19 @@ class BagToXml(object):
     def bagToXmlBlock(self, bag, namespaces=None):
         """Return an XML block version of the Bag.
 
-        The XML block version of the Bag uses XML attributes for an efficient representation of types:
-        If the element-leaf is a simple string, there are no type attributes in the corresponding XML nodes
-        otherwise a 'T' attribute is set to the node and the value of 'T' changes in function of the type
-        (value of 'T' is 'B' for boolean, 'L' for integer, 'R' for float, 'D' for date, 'H' for time).
+        The XML block version of the Bag uses XML attributes for an efficient representation
+        of types:
+        If the element-leaf is a simple string, there are no type attributes in the
+        corresponding XML nodes otherwise a 'T' attribute is set to the node and the value of
+        'T' changes in function of the type (value of 'T' is 'B' for boolean, 'L' for integer,
+        'R' for float, 'D' for date, 'H' for time).
 
         >>> mybag=Bag()
         >>> mybag['aa.bb']=4567
         >>> mybag['aa.cc']='test'
         >>> mybag.toXmlBlock()
-        ['<aa>', u'<cc>test</cc>', u'<bb T="L">4567</bb>', '</aa>']"""
+        ['<aa>', u'<cc>test</cc>', u'<bb T="L">4567</bb>', '</aa>']
+        """
         return '\n'.join([self.nodeToXmlBlock(node, namespaces=namespaces) for node in bag.nodes])
 
     # -------------------- toXml --------------------------------
@@ -327,10 +336,11 @@ class BagToXml(object):
               docHeader=None, self_closed_tags=None, translate_cb=None, omitUnknownTypes=False,
               omitRoot=False, forcedTagAttr=None, mode4d=False, pretty=None):
         """Return a complete standard XML version of the Bag, including the encoding tag
-        ``<?xml version=\'1.0\' encoding=\'UTF-8\'?>``; the Bag's content is hierarchically represented
-        as an XML block sub-element of the ``<GenRoBag>`` node.
+        ``<?xml version=\'1.0\' encoding=\'UTF-8\'?>``; the Bag's content is hierarchically
+        represented as an XML block sub-element of the ``<GenRoBag>`` node.
 
-        Is also possible to write the result on a file, passing the path of the file as the ``filename`` parameter.
+        Is also possible to write the result on a file, passing the path of the file as the
+        ``filename`` parameter.
 
         :param bag: the Bag to transform in a XML block version
         :param filename: the path of the output file
@@ -351,7 +361,8 @@ class BagToXml(object):
         >>> mybag = Bag()
         >>> mybag['aa.bb'] = 4567
         >>> mybag.toXml()
-        '<?xml version=\'1.0\' encoding=\'iso-8859-15\'?><GenRoBag><aa><bb T="L">4567</bb></aa></GenRoBag>'"""
+        '<?xml version=\'1.0\' encoding=\'iso-8859-15\'?><GenRoBag><aa><bb T="L">4567</bb></aa></GenRoBag>'
+        """
         result = ''
         if docHeader != False:
             result = docHeader or "<?xml version='1.0' encoding='" + encoding + "'?>\n"
@@ -401,7 +412,8 @@ class BagToXml(object):
         :param value: TODO
         :param attributes: TODO
         :param cls: TODO
-        :param xmlMode: TODO"""
+        :param xmlMode: TODO
+        """
         t = cls
         if not t:
             if value != '':
@@ -490,7 +502,6 @@ class BagToXml(object):
 
 
 class XmlOutputBag(object):
-
     """
     with XmlOutputBag('miofile',docHeader = None, omitRoot=False, ) as b
         for n in collection:

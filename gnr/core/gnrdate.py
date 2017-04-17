@@ -45,7 +45,8 @@ def yearDecode(datestr):
     """returns the year number as an int from a string of 2 or 4 digits:
     if 2 digits is given century is added
 
-    :param datestr: the string including year"""
+    :param datestr: the string including year
+    """
     year = None
     datestr = datestr.strip()
     if datestr and datestr.isdigit():
@@ -100,16 +101,20 @@ def decodeOneDate(datestr, workdate=None, months=None, days=None, quarters=None,
         * you can specify a number of days to add to today: e.g. 'today + 3' or 'today - 15'
     * this week, next week, last week (can be translated in all languages)
     * this month, next month, last month (can be translated in all languages )
-        * can be specified a number of months to add to current month: e.g. 'this month + 3' or 'this month - 24'
+        * can be specified a number of months to add to current month: 
+          e.g. 'this month + 3' or 'this month - 24'
     * the name of a quarter: e.g. Q1 or 1st quarter
     * the name of a month: e.g. april or apr
         * can be specified a year after the month: e.g. apr 07 or april 2007
-        * returns a tuple (year, month): if year is not specified in datestr, year is returned None
+        * returns a tuple (year, month): if year is not specified in datestr, year is
+          returned None
     * the name of a weekday: e.g. monday or mon
         * the date returned is the date of the given weekday in this week (relative to workdate)
     * an iso date: e.g. 2008-04-28
-    * a date formatted according to locale (see babel doc): e.g. 4 28, 2008 (en_us) or 28-4-08 (it)
-                           various separators are admitted: 28-4-08, 28/4/08, 28 4 08"""
+    * a date formatted according to locale (see babel doc):
+      e.g. 4 28, 2008 (en_us) or 28-4-08 (it).  Various separators are admitted:
+      28-4-08, 28/4/08, 28 4 08
+    """
 
     def addToDay(datestr, date):
         if '+' in datestr:
@@ -256,7 +261,8 @@ def periodCaption(dateFrom=None, dateTo=None, locale=None):
 
     :param dateFrom: the beginning period date
     :param dateTo: the ending period date
-    :param locale: the current locale (e.g: en, en_us, it)"""
+    :param locale: the current locale (e.g: en, en_us, it)
+    """
     localNoPeriod = gnrlocale.getDateKeywords('no period', locale)[0]
     localTo = gnrlocale.getDateKeywords('to', locale)[0]
     localFrom = gnrlocale.getDateKeywords('from', locale)[0]
@@ -274,8 +280,9 @@ def periodCaption(dateFrom=None, dateTo=None, locale=None):
 
 def decodeDatePeriod(datestr, workdate=None, locale=None, returnDate=False, dtype='D',
                      min_date=None, max_date=None):
-    """Parse a string representing a date or a period and returns a string of one or two dates in iso format separated by ``;``.
-    See doc of :meth:`decodeOneDate()` for details on possible formats of a single date
+    """Parse a string representing a date or a period and returns a string of one or two dates
+    in iso format separated by ``;``.
+    See doc of :meth:`decodeOneDate()` for details on possible formats of a single date.
 
     :param datestr: the string representing a date or a period
     :param workdate: the :ref:`workdate`
@@ -287,16 +294,21 @@ def decodeDatePeriod(datestr, workdate=None, locale=None, returnDate=False, dtyp
 
     * two dates separated by ``;``: e.g. ``22 4, 2008;28 4, 2008``
     * two dates separated by `` to ``
-    * two dates in form ``from date to date`` (can be translated and supports synonimous, e.g. ``between date and date``)
+    * two dates in form ``from date to date`` (can be translated and supports synonimous, 
+      e.g. ``between date and date``)
 
         * if a period is given as starting date, the start date of period is kept
         * if a period is given as end date, the end date of period is kept
-        * if no year is specified, the year is relative to :ref:`workdate`, keeping all periods in the past
+        * if no year is specified, the year is relative to :ref:`workdate`, keeping all periods
+          in the past
           (e.g. if working date is 2008-04-28, december is interpreted as december 2007)
-        * if a year is specified for the end date (or period) a relative year is calculated for the starting period
+        * if a year is specified for the end date (or period) a relative year is calculated for
+          the starting period
           (e.g. from december to march 06: returns ``'2005-12-01;2006-03-31'``)
-    * a starting date in form ``from date``, if date is a period starting date is keep: e.g. april returns ``'2008-04-01;'``
-    * an end date in form ``to date``, if date is a period end date is keep: e.g. april returns ``';2008-04-30'``
+    * a starting date in form ``from date``, if date is a period starting date is keep:
+      e.g. april returns ``'2008-04-01;'``
+    * an end date in form ``to date``, if date is a period end date is keep:
+      e.g. april returns ``';2008-04-30'``
     * a single expression representing a period: e.g. 2007 returns ``'2007-01-01;2007-12-31'``
     * a single expression representing a single date: e.g. today returns ``'2008-04-28'``
     """
@@ -402,7 +414,8 @@ def monthStart(year=None, month=None, date=None):
 
     :param year: The year you specify
     :param month: The month you specify
-    :param date: TODO"""
+    :param date: TODO
+    """
     if date:
         year = date.year
         month = date.month
@@ -415,7 +428,8 @@ def monthEnd(year=None, month=None, date=None):
 
     :param year: The year you specify
     :param month: The month you specify
-    :param date: TODO"""
+    :param date: TODO
+    """
     if date:
         year = date.year
         month = date.month
@@ -430,7 +444,8 @@ def monthEnd(year=None, month=None, date=None):
 def dateLastYear(d):
     """TODO
 
-    :param d: the date"""
+    :param d: the date
+    """
     if not d:
         return
     if d.month == 2 and d.day == 29:
@@ -449,7 +464,8 @@ def dayIterator(period, wkdlist=None, locale=None, workdate=None, asDate=True):
     :param wkdlist: TODO
     :param locale: the current locale (e.g: en, en_us, it)
     :param workdate: the :ref:`workdate`
-    :param asDate: boolean. TODO"""
+    :param asDate: boolean. TODO
+    """
     dstart, dstop = decodeDatePeriod(period, returnDate=True, locale=locale, workdate=workdate)
     itr = rrule.rrule(rrule.DAILY, dtstart=dstart, until=dstop, byweekday=wkdlist)
     for d in itr:
@@ -462,7 +478,8 @@ def dayIterator(period, wkdlist=None, locale=None, workdate=None, asDate=True):
 def toTime(t):
     """Convert a time, datetime or a string (``HH:MM:SS`` or ``HH:MM``) to a time.
 
-    :param t: the time to convert"""
+    :param t: the time to convert
+    """
     if isinstance(t, datetime.datetime):
         return t.time()
     elif isinstance(t, datetime.time):
@@ -479,7 +496,8 @@ def toTime(t):
 def toDate(date_or_datetime):
     """Convert a date or datetime to a date. Return it
 
-    :param date_or_datetime: the date or datetime to convert in a date"""
+    :param date_or_datetime: the date or datetime to convert in a date
+    """
     if isinstance(date_or_datetime, datetime.datetime):
         return date_or_datetime.date()
     elif isinstance(date_or_datetime, datetime.date):
@@ -504,7 +522,8 @@ def dateRange(dstart, dstop):
     2010-10-08
     2010-10-09
     2010-10-10
-    2010-10-11"""
+    2010-10-11
+    """
     dt = dstart
     while dt < dstop:
         yield dt
@@ -521,7 +540,8 @@ def time_to_minutes(t):
     >>> import datetime
     >>> now = datetime.datetime(2011, 10, 8, 15, 26, 32)
     >>> t(now)
-    926"""
+    926
+    """
     return t.hour * 60 + t.minute
 
 
@@ -531,7 +551,8 @@ def minutes_to_time(mins):
     :param mins: int - number of minutes
 
     >>> minutes_to_time(480)
-    datetime.time(8, 0)"""
+    datetime.time(8, 0)
+    """
     hours = mins / 60
     mins = mins % 60
     return datetime.time(hours, mins)
@@ -591,7 +612,8 @@ class TimeInterval(object):
     >>> a == a
     True
     >>> a in b
-    True"""
+    True
+    """
 
     def __init__(self, start=None, stop=None, minutes=None):
         if minutes:
@@ -640,7 +662,8 @@ class TimeInterval(object):
         This is, test the following condition::
 
             [self]
-                [other]"""
+                [other]
+        """
         if not isinstance(other, TimeInterval):
             try:
                 other = TimeInterval(other)
@@ -649,12 +672,14 @@ class TimeInterval(object):
         return self.stop < other.start
 
     def __le__(self, other):
-        """Test if 'self' starts earlier than or when 'other' starts *and* 'self' ends earlier than or when 'other' ends.
+        """Test if 'self' starts earlier than or when 'other' starts *and* 'self' ends
+        earlier than or when 'other' ends.
 
         This is, test the following condition::
 
             [self]
-                [other]"""
+                [other]
+        """
         if not isinstance(other, TimeInterval):
             try:
                 other = TimeInterval(other)
@@ -666,7 +691,8 @@ class TimeInterval(object):
     def cmp(one, other):
         """Compare two TimeIntervals
 
-        It guarantees total order (while the other TimeInterval's comparison operators do not)"""
+        It guarantees total order (while the other TimeInterval's comparison operators do not)
+        """
         if not isinstance(one, TimeInterval):
             one = TimeInterval(one)
         if not isinstance(other, TimeInterval):
@@ -712,7 +738,8 @@ class TimeInterval(object):
         TimeInterval.xxx where xxx is ``NO_OVERLAP``, ``FULLY_CONTAINED``, ``FULLY_CONTAINS``,
         ``COVER_RIGHT`` or ``COVER_LEFT``
 
-        :param other: a TimeInterval or a string represting it"""
+        :param other: a TimeInterval or a string represting it
+        """
         if not isinstance(other, TimeInterval):
             other = TimeInterval(other)
         if self < other or self > other:
@@ -758,8 +785,8 @@ class TimePeriod(object):
     >>> str(p)
     '9:00-9:30, 11:30-12:00, 16:30-17:00'
 
-    If you attach custom attributes to your TimeIntervals (or if you derive your own subclasses), they are preserved when
-    intervals are sliced:
+    If you attach custom attributes to your TimeIntervals (or if you derive your own
+    subclasses), they are preserved when intervals are sliced:
 
     >>> iv1 = TimeInterval('8:00-12:00')
     >>> iv1.name = 'morning'
@@ -772,7 +799,8 @@ class TimePeriod(object):
     >>> [i.name for i in p.intervals]
     ['morning', 'morning', 'afternoon']
 
-    TimePeriod also supports ``len()``, ``iter()`` and getitem operations"""
+    TimePeriod also supports ``len()``, ``iter()`` and getitem operations
+    """
 
     def __init__(self, *intervals):
         self._intervals = []
@@ -788,7 +816,8 @@ class TimePeriod(object):
 
         If it overlaps with any existing interval in this TimePeriod, they'll be merged
 
-        :param item: TimeInterval or TimePeriod or string"""
+        :param item: TimeInterval or TimePeriod or string
+        """
         if isinstance(item, TimePeriod):
             intervals = item.intervals
         else:
@@ -816,7 +845,8 @@ class TimePeriod(object):
 
         Overlapping intervals will be adjusted
 
-        :param item: TimeInterval or TimePeriod"""
+        :param item: TimeInterval or TimePeriod
+        """
         if isinstance(item, TimePeriod):
             intervals = item.intervals
         else:
@@ -892,7 +922,8 @@ def seconds_to_text(seconds):
     >>> print seconds_to_text(3600)
     1h
     >>> print seconds_to_text(3672)
-    1h 1m 12s"""
+    1h 1m 12s
+    """
     seconds = int(seconds)
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)

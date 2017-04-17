@@ -64,13 +64,15 @@ class GnrClassCatalog(object):
         """Add a python class to the list of objects known by the Catalog.
 
         :param cls: the class itself by reference
-        :param key: a string, is a short name of the class, as found in textual values to parse or write
+        :param key: a string, is a short name of the class, as found in textual values to
+                    parse or write
         :param aliases: other keys to parse using this class.
-        :param altcls: other classes to write in the same way. All values will be parsed with the main class.
+        :param altcls: other classes to write in the same way. All values will be parsed with
+                       the main class.
 
         :param align: TODO. Default value is ``L``
-        :param empty: the class or value to be used for empty parsed values (example ``''`` for strings).
-
+        :param empty: the class or value to be used for empty parsed values (example ``''``
+                      for strings).
         """
         self.classes[key] = cls
         self.align[key] = align
@@ -115,21 +117,25 @@ class GnrClassCatalog(object):
             return self.align.get(self.names[key.__class__])
 
     def addSerializer(self, mode, cls, funct):
-        """Given a mode and a class to convert, specifies the function to use for the actual conversion:
+        """Given a mode and a class to convert, specifies the function to use for the actual
+        conversion:
 
         :param mode: TODO
         :param cls: the class to be converted
-        :param funct: is a function by reference or lambda, will receive an instance and return an appropriate value for the conversion mode
+        :param funct: is a function by reference or lambda, will receive an instance and return
+                      an appropriate value for the conversion mode
         """
         m = self.serializers.get(mode, {})
         m[cls] = funct
         self.serializers[mode] = m
 
     def addParser(self, cls, funct):
-        """Given a class to convert, specifies the function to use for the actual conversion from text:
+        """Given a class to convert, specifies the function to use for the actual conversion
+        from text:
 
         :param cls: the class to be converted
-        :param funct: is a function by reference or lambda, will receive a text and return an instance
+        :param funct: is a function by reference or lambda, will receive a text and return an
+                      instance
         """
         self.parsers[cls] = funct
         clsname = self.names[cls]
@@ -374,7 +380,8 @@ class GnrClassCatalog(object):
         """Add???
 
         :param txt: TODO
-        :param workdate: the :ref:`workdate`"""
+        :param workdate: the :ref:`workdate`
+        """
         return dateutil_parse(txt)
 
     def serialize_datetime(self, ts):
@@ -386,7 +393,8 @@ class GnrClassCatalog(object):
         """Add???
 
         :param txt: TODO
-        :param workdate: the :ref:`workdate`"""
+        :param workdate: the :ref:`workdate`
+        """
         raise
 
     def serialize_timedelta(self, td):
@@ -409,7 +417,8 @@ class GnrClassCatalog(object):
         """Add???
 
         :param txt: TODO
-        :param workdate: the :ref:`workdate`"""
+        :param workdate: the :ref:`workdate`
+        """
         if txt != '0000-00-00':
             if txt and ISO_MATCH.match(txt):
                 return datetime.date(*[int(el) for el in gnrstring.wordSplit(txt)[0:3]])

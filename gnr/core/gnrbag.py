@@ -46,14 +46,17 @@ A Bag can be loaded and saved in some ways:
 
 Another class you could have to deal with is BagNode (a Bag is a list of BagNode-s).
 
-BagNode is not intended to be instanced directly, it is used internally by Bag, however in some cases is useful
-to interact with BagNode instances inside a Bag.
+BagNode is not intended to be instanced directly, it is used internally by Bag, however
+in some cases is useful to interact with BagNode instances inside a Bag.
 
-.. note:: The square brackets around some parameters in the following method signature denote
-          that the parameter is optional, not that you should type square brackets at that position.
-          You will see this notation frequently in the :ref:`Genro Library Reference <library_reference>`
+.. note:: The square brackets around some parameters in the following method signature
+          denote that the parameter is optional, not that you should type square brackets
+          at that position.  You will see this notation frequently in the
+          :ref:`Genro Library Reference <library_reference>`
 
-.. note:: Some methods have the "square-brackets notation": it is a shorter notation for the method"""
+.. note:: Some methods have the "square-brackets notation": it is a shorter notation for
+          the method.
+"""
 from __future__ import print_function
 import copy
 from datetime import datetime, timedelta
@@ -94,12 +97,15 @@ class BagDeprecatedCall(BagException):
 
 
 class BagNode(object):
-    """BagNode is the element type which a Bag is composed of. That's why it's possible to say that a Bag
-    is a collection of BagNodes. A BagNode is an object that gather within itself, three main things:
+    """BagNode is the element type which a Bag is composed of. That's why it's possible to
+    say that a Bag is a collection of BagNodes.  A BagNode is an object that gather within
+    itself, three main things:
 
-    * *label*: can be only a string.
-    * *value*: can be anything even a BagNode. If you got the xml of the Bag it should be serializable
-    * *attributes*: dictionary that contains node's metadata"""
+    * *label*: Can be only a string.
+    * *value*: Can be anything even a BagNode. If you got the xml of the Bag it should be
+               serializable.
+    * *attributes*: Dictionary that contains node's metadata.
+    """
 
     def __init__(self, parentbag, label, value=None, attr=None, resolver=None,
                  validators=None, _removeNullAttributes=True):
@@ -118,7 +124,9 @@ class BagNode(object):
         self.setValue(value, trigger=False)
 
     def __eq__(self, other):
-        """One BagNode is equal to another one if its key, value, attributes and resolvers are the same of the other one"""
+        """One BagNode is equal to another one if its key, value, attributes and resolvers
+        are the same of the other one.
+        """
         try:
             if isinstance(other, self.__class__) and (self.attr == other.attr):
                 if self._resolver == None:
@@ -170,8 +178,11 @@ class BagNode(object):
     def getValue(self, mode=''):
         """Return the value of the BagNode. It is called by the property .value
 
-        :param mode='static': allow to get the resolver instance instead of the calculated value
-        :param mode='weak': allow to get a weak ref stored in the node instead of the actual object"""
+        :param mode='static': Allow to get the resolver instance instead of the calculated
+                              value.
+        :param mode='weak': Allow to get a weak ref stored in the node instead of the actual
+                            object.
+        """
         if not self._resolver == None:
             if 'static' in mode:
                 return self._value
@@ -197,9 +208,11 @@ class BagNode(object):
 
     def setValue(self, value, trigger=True, _attributes=None, _updattr=None,
                  _removeNullAttributes=True, _reason=None):
-        """Set the node's value, unless the node is locked. This method is called by the property .value
+        """Set the node's value, unless the node is locked.  This method is called by the
+        property `.value`.
 
-        :param value: the value to set the new bag inherits the trigger of the parentBag and calls it sending an update event
+        :param value: The value to set the new bag inherits the trigger of the parentBag and
+                      calls it sending an update event.
         :param trigger: boolean. TODO
         """
         if self.locked:
@@ -286,7 +299,8 @@ class BagNode(object):
         If it doesn't exist then it returns a default value
 
         :param label: the attribute's label that should be get
-        :param default: the default return value for a not found attribute"""
+        :param default: the default return value for a not found attribute
+        """
         if not label or label == '#':
             return self.attr
         return self.attr.get(label, default)
@@ -376,7 +390,8 @@ class BagNode(object):
         a new BagValidationList and append the validator to it
 
         :param validator: the type of validation to set into the list of the node
-        :param parameterString: the parameter for a single validation type"""
+        :param parameterString: the parameter for a single validation type
+        """
         print(x)
         if self._validators is None:
             self._validators = BagValidationList(self)
@@ -409,15 +424,17 @@ class BagNode(object):
 class Bag(GnrObject):
     """A container object like a dictionary, but ordered.
 
-    Nested elements can be accessed with a path of keys joined with dots"""
+    Nested elements can be accessed with a path of keys joined with dots
+    """
     # -------------------- __init__ --------------------------------
 
     def __init__(self, source=None, **kwargs):
-        """ A new bag can be created in various ways:
+        """A new bag can be created in various ways:
 
         * parsing a local file, a remote url or a text string (see fromXml)
         * converting a dictionary into a Bag
-        * passing a list or a tuple just like for the builtin dict() command"""
+        * passing a list or a tuple just like for the builtin dict() command
+        """
         GnrObject.__init__(self)
         self._nodes = []
         self._backref = False
@@ -517,7 +534,8 @@ class Bag(GnrObject):
         bag. Also nested keys are allowed. Return ``True`` if the key exists
         in the Bag, ``False`` otherwise
 
-        :param what: the key path to test"""
+        :param what: the key path to test
+        """
         if isinstance(what, six.string_types):
             return bool(self.getNode(what))
         elif isinstance(what, BagNode):
@@ -534,8 +552,8 @@ class Bag(GnrObject):
         formed by the labels of the nested items, joined by the char '.', but several different
         path notations have been implemented to offer some useful features:
 
-        * if a path segment who starts with '#' is followed by a number, the item will by identified
-          by its index position, as a list element
+        * if a path segment who starts with '#' is followed by a number, the item will be
+          identified by its index position, as a list element
         * if a path ends with '.?', it returns the item's keys
         * if at the last path-level the label contains '#', what follows the '#' is considered the
           key of an item's attribute and this method will return that attribute's value
@@ -545,7 +563,8 @@ class Bag(GnrObject):
 
         :param path: the item's path
         :param default: the default return value for a not found item
-        :param mode='static': with this attribute the getItem doesn't solve the Bag :ref:`bag_resolver`
+        :param mode='static': with this attribute the getItem doesn't solve the Bag
+                              :ref:`bag_resolver`
 
         >>> mybag = Bag()
         >>> mybag.setItem('a',1)
@@ -564,7 +583,8 @@ class Bag(GnrObject):
         >>> mybag = Bag({'a':1,'b':2})
         >>> second = mybag['b']
         >>> print(second)
-        2"""
+        2
+        """
         if not path:
             return self
         if isinstance(path, six.string_types):
@@ -585,7 +605,8 @@ class Bag(GnrObject):
 
     def setdefault(self, path, default=None):
         """If *path* is in the Bag, return its value. If not, insert in the *path* the default value
-        and return it. Default defaults to ``None``"""
+        and return it. Default defaults to ``None``
+        """
         node = self.getNode(path)
         if not node:
             self[path] = default
@@ -596,9 +617,11 @@ class Bag(GnrObject):
         """It transforms a flat Bag into a hierarchical Bag and returns it.
 
         :param group_by: list of keys
-        :param caption: the attribute to use for the leaf key. If not specified, it uses the original key
+        :param caption: the attribute to use for the leaf key. If not specified, it uses the
+                        original key
         :param attributes: keys to copy as attributes of the leaves. Default value
-                           is ``*`` (= select all the attributes)"""
+                           is ``*`` (= select all the attributes)
+        """
         if isinstance(group_by, six.string_types):
             group_by = group_by.split(',')
         result = Bag()
@@ -620,7 +643,8 @@ class Bag(GnrObject):
     def sort(self, pars='#k:a'):
         """TODO
 
-        :param pars: TODO None: label ascending"""
+        :param pars: TODO None: label ascending
+        """
         if not isinstance(pars, six.string_types):
             self._nodes.sort(pars)
         else:
@@ -651,7 +675,8 @@ class Bag(GnrObject):
     def sum(self, what='#v'):
         """TODO
 
-        :param what: TODO"""
+        :param what: TODO
+        """
         if ',' in what:
             result = []
             wlist = what.split(',')
@@ -666,7 +691,8 @@ class Bag(GnrObject):
 
         :param label: the :ref:`bag`'s label
         :param default: TODO
-        :param mode: TODO"""
+        :param mode: TODO
+        """
         result = None
         currnode = None
         currvalue = None
@@ -708,8 +734,10 @@ class Bag(GnrObject):
         the not existing nodes of the pathlist. Return the current node's value
 
         :param pathlist: list of nodes' labels
-        :param autocreate: boolean. If ``True``, it creates all the not existing nodes of the pathlist
-        :param returnLastMatch: boolean. TODO"""
+        :param autocreate: boolean. If ``True``, it creates all the not existing nodes of the
+                                    pathlist
+        :param returnLastMatch: boolean. TODO
+        """
         curr = self
         if isinstance(pathlist, six.string_types):
             orpa = pathlist
@@ -810,7 +838,8 @@ class Bag(GnrObject):
         """Call the __str__ method, and return an ascii encoded formatted representation of the Bag
 
         :param encoding: the encoding type
-        :param mode: TODO"""
+        :param mode: TODO
+        """
         return self.__str__(mode=mode).encode(encoding, 'ignore')
 
     def getFormattedValue(self, joiner='\n', omitEmpty=True, **kwargs):
@@ -827,7 +856,8 @@ class Bag(GnrObject):
 
         >>> b = Bag({'a':1,'a':2,'a':3})
         >>> b.keys()
-        ['a', 'c', 'b']"""
+        ['a', 'c', 'b']
+        """
         return [x.label for x in self._nodes]
 
     def values(self):
@@ -839,7 +869,8 @@ class Bag(GnrObject):
 
         >>> b = Bag({'a':1,'b':2,'c':3})
         >>> b.items()
-        [('a', 1), ('c', 3), ('b', 2)]"""
+        [('a', 1), ('c', 3), ('b', 2)]
+        """
         return [(x.label, x.value) for x in self._nodes]
 
     def iteritems(self):
@@ -858,28 +889,30 @@ class Bag(GnrObject):
             yield x.value
 
     def digest(self, what=None, condition=None, asColumns=False):
-        """It returns a list of ``n`` tuples including keys and/or values and/or attributes of all the Bag's elements,
-        where ``n`` is the number of *special keys* called in the method
+        """It returns a list of ``n`` tuples including keys and/or values and/or attributes
+        of all the Bag's elements, where ``n`` is the number of *special keys* called in
+        the method.
 
-        :param what: the parameter who includes a string of one or more special keys separated by a comma
+        :param what: the parameter who includes a string of one or more special keys separated
+                     by a comma
 
         Here follows a list of the *special keys*:
 
-            +------------------------+----------------------------------------------------------------------+
-            |  *Special keys*        |  Description                                                         |
-            +========================+======================================================================+
-            | ``'#k'``               | Show the label of each item                                          |
-            +------------------------+----------------------------------------------------------------------+
-            | ``'#v'``               | Show the value of each item                                          |
-            +------------------------+----------------------------------------------------------------------+
-            | ``'#v.path'``          | Show inner values of each item                                       |
-            +------------------------+----------------------------------------------------------------------+
-            | ``'#__v'``             | Show the values of each node in 'static' mode  ???                   |
-            +------------------------+----------------------------------------------------------------------+
-            | ``'#a'``               | Show attributes of each item                                         |
-            +------------------------+----------------------------------------------------------------------+
-            | ``'#a.attributeName'`` | Show the attribute called 'attrname' for each item                   |
-            +------------------------+----------------------------------------------------------------------+
+            +------------------------+------------------------------------------------------+
+            |  *Special keys*        |  Description                                         |
+            +========================+======================================================+
+            | ``'#k'``               | Show the label of each item                          |
+            +------------------------+------------------------------------------------------+
+            | ``'#v'``               | Show the value of each item                          |
+            +------------------------+------------------------------------------------------+
+            | ``'#v.path'``          | Show inner values of each item                       |
+            +------------------------+------------------------------------------------------+
+            | ``'#__v'``             | Show the values of each node in 'static' mode  ???   |
+            +------------------------+------------------------------------------------------+
+            | ``'#a'``               | Show attributes of each item                         |
+            +------------------------+------------------------------------------------------+
+            | ``'#a.attributeName'`` | Show the attribute called 'attrname' for each item   |
+            +------------------------+------------------------------------------------------+
 
         :param condition: set a :ref:`sql_condition` for digest process
         :param asColumns: TODO
@@ -901,8 +934,8 @@ class Bag(GnrObject):
             >>> print(b['documents.letters.?d:#k,#a.createdOn,#a.createdBy'])
             [('letter_to_sheila','12-4-2003','Walter'),('letter_to_mark','10-7-2003','Jack'),('letter_to_john','11-5-2003','Mark')]
             >>> print(b['documents.letters.?d:#v,#a.createdOn'])
-            [('file0', '10-7-2003'), ('file1', '11-5-2003'), ('file2', '12-4-2003')]"""
-
+            [('file0', '10-7-2003'), ('file1', '11-5-2003'), ('file2', '12-4-2003')]
+        """
         if not what:
             what = '#k,#v,#a'
         if isinstance(what, six.string_types):
@@ -947,7 +980,8 @@ class Bag(GnrObject):
         """TODO
 
         :param cols: TODO
-        :param attrMode: boolean. TODO"""
+        :param attrMode: boolean. TODO
+        """
         if isinstance(cols, six.string_types):
             cols = cols.split(',')
         mode = ''
@@ -957,8 +991,9 @@ class Bag(GnrObject):
         return self.digest(what, asColumns=True)
 
     def has_key(self, path):
-        """This method is analog to dictionary's has_key() method. Seek for the presence of the key
-        in the Bag, and return ``True`` if the given item has the key, ``False`` otherwise
+        """This method is analog to dictionary's has_key() method. Seek for the presence of
+        the key in the Bag, and return ``True`` if the given item has the key, ``False``
+        otherwise.
 
         :param path: the path of the given item
 
@@ -966,12 +1001,14 @@ class Bag(GnrObject):
         >>> b.has_key('a')
         True
         >>> b.has_key('abc')
-        False"""
+        False
+        """
         return bool(self.getNode(path))
 
     def getNodes(self, condition=None):
         """Get the actual list of nodes contained in the Bag.
-        The getNodes method works as the filter of a list"""
+        The getNodes method works as the filter of a list.
+        """
         if not condition:
             return self._nodes
         else:
@@ -981,9 +1018,10 @@ class Bag(GnrObject):
 
     def popNode(self, path, _reason=None):
         """This method is analog to dictionary's pop() method. It pops the given node from
-        a Bag at the relative path and returns it
+        a Bag at the relative path and returns it.
 
-        :param path: path of the given node"""
+        :param path: path of the given node
+        """
         obj, label = self._htraverse(path)
         if obj:
             n = obj._pop(label, _reason=_reason)
@@ -1005,7 +1043,8 @@ class Bag(GnrObject):
         1
         >>> print(b)
         0 - (int) a: 2
-        1 - (int) a: 3"""
+        1 - (int) a: 3
+        """
         result = dflt
         obj, label = self._htraverse(path)
         if obj:
@@ -1038,10 +1077,11 @@ class Bag(GnrObject):
 
     def update(self, otherbag, resolved=False):
         """Update the Bag with the ``key/value`` pairs from *otherbag*,
-        overwriting all the existing keys. Return ``None``
+        overwriting all the existing keys. Return ``None``.
 
         :param otherbag: the Bag to merge into
-        :param resolved: TODO"""
+        :param resolved: TODO
+        """
         if isinstance(otherbag, dict):
             for k, v in otherbag.items():
                 self.setItem(k, v)
@@ -1119,7 +1159,8 @@ class Bag(GnrObject):
             0 - (int) house: 2929387
             1 - (int) mobile: 444334523
             2 - (int) office: 3320924  <to='17' from='9'>
-        >>> john_doe['credit_cards']=Bag()"""
+        >>> john_doe['credit_cards']=Bag()
+        """
         result = Bag()
         othernodes = dict([(n.getLabel(), n) for n in otherbag._nodes])
         for node in self.nodes:
@@ -1171,7 +1212,8 @@ class Bag(GnrObject):
 
         :param attr: path of the given item
         :param value: path of the given item
-        :param path:  an empty list that will be filled with the path of the found node"""
+        :param path:  an empty list that will be filled with the path of the found node
+        """
         bags = []
         if path == None:
             path = []
@@ -1208,7 +1250,8 @@ class Bag(GnrObject):
         >>> elif 'bar' in bag:
         >>>     return (bag.getNode(foo),['bar','baz'])
         >>> else:
-        >>>     return (None,['foo','bar','baz'])"""
+        >>>     return (None,['foo','bar','baz'])
+        """
         node, tail_path = self._htraverse(path, returnLastMatch=True)
         if hasattr(node, '_htraverse'):
             node = node.getNode(tail_path)
@@ -1220,7 +1263,8 @@ class Bag(GnrObject):
             return node
 
     def getDeepestNode_(self, path=None):
-        """This method returns the deepest matching node in the bag and the remaining path of the path.
+        """This method returns the deepest matching node in the bag and the remaining
+        path of the path.
         bag.getDeepestNode('foo.bar.baz') returns:
 
         >>> if 'foo.bar.baz' in bag:
@@ -1230,7 +1274,8 @@ class Bag(GnrObject):
         >>> elif 'bar' in bag:
         >>>     return (bag.getNode(foo),['bar','baz'])
         >>> else:
-        >>>     return (None,['foo','bar','baz'])"""
+        >>>     return (None,['foo','bar','baz'])
+        """
         result = self._htraverse(path, returnLastMatch=True)
         if hasattr(result[0], '_htraverse'):
             return result[0].getNode(result[1]), ''
@@ -1242,8 +1287,10 @@ class Bag(GnrObject):
 
         :param path: path of the given node
         :param asTuple: boolean. If ``True``, return a tuple with the object and the node
-        :param autocreate: boolean. If ``True``, it creates all the not existing nodes of the pathlist
-        :param default: the default return value for a not found node"""
+        :param autocreate: boolean. If ``True``, it creates all the not existing nodes of
+                                    the pathlist
+        :param default: the default return value for a not found node
+        """
         if not path:
             return self.parentNode
         if isinstance(path, int):
@@ -1276,7 +1323,8 @@ class Bag(GnrObject):
         """Allow to set, modify or delete attributes into a node at the given path
 
         You can set the attributes into a Bag with the `_attributes` parameter if
-        you have a dict of attributes; alternatively, you can pass all the attributes as **kwargs.
+        you have a dict of attributes; alternatively, you can pass all the attributes
+        as **kwargs.
 
         >>> b = Bag()
         >>> b.setAttr('documents.letters.letter_to_sheila', createdOn='12-4-2003', createdBy='Walter', lastModify= '12-9-2003')
@@ -1301,8 +1349,8 @@ class Bag(GnrObject):
                                                      **kwargs)
 
     def getAttr(self, path=None, attr=None, default=None):
-        """Get the node's attribute at the given path and return it. If it doesn't exist, it returns ``None``,
-        so that this method never raises a ``KeyError``
+        """Get the node's attribute at the given path and return it. If it doesn't exist,
+        it returns ``None``, so that this method never raises a ``KeyError``.
 
         :param path: path of the given item
         :param attr: the label of the attribute to get
@@ -1326,7 +1374,8 @@ class Bag(GnrObject):
         You have to use the special char ``?`` followed by the attribute's name:
 
         >>> print(b['documents.letters.letter_to_sheila?fileOwner'])
-        Steve"""
+        Steve
+        """
         node = self.getNode(path)
         if node:
             return node.getAttr(label=attr, default=default)
@@ -1337,7 +1386,8 @@ class Bag(GnrObject):
         """TODO
 
         :param path: the path of the BagNode.
-        :param attr: the name of the attribute to delete"""
+        :param attr: the name of the attribute to delete
+        """
         return self.getNode(path).delAttr(attr)
 
     def getInheritedAttributes(self):
@@ -1351,7 +1401,8 @@ class Bag(GnrObject):
         """Split a path string it at each '.' and return both a list of nodes' labels
         and the first list's element label.
 
-        :param path: the given path"""
+        :param path: the given path
+        """
         if isinstance(path, six.string_types):
             escape = "\\."
             if escape in path:
@@ -1372,9 +1423,11 @@ class Bag(GnrObject):
         :param ascii: boolean. TODO
         :param lower: boolean. TODO
 
-        .. note:: If you attempt to transform a hierarchical bag to a dictionary, the resulting dictionary will contain
-                  nested bags as values. In other words only the first level of the Bag is transformed to a dictionary,
-                  and the transformation is not recursive"""
+        .. note:: If you attempt to transform a hierarchical bag to a dictionary, the
+                  resulting dictionary will contain nested bags as values. In other words
+                  only the first level of the Bag is transformed to a dictionary, and the
+                  transformation is not recursive.
+        """
         result = {}
         for el in self._nodes:
             key = el.label
@@ -1398,8 +1451,9 @@ class Bag(GnrObject):
 
     # -------------------- addItem --------------------------------
     def addItem(self, item_path, item_value, _attributes=None, _position=">", _validators=None, **kwargs):
-        """Add an item to the current Bag using a path in the form "label1.label2. ... .labelN", returning the current Bag.
-        If the path already exists, this method replicates the path keeping both the old values and the new value
+        """Add an item to the current Bag using a path in the form "label1.label2. ... .labelN",
+        returning the current Bag.  If the path already exists, this method replicates the
+        path keeping both the old values and the new value.
 
         :param item_path: the path of the given item
         :param item_value: the value to set
@@ -1407,23 +1461,33 @@ class Bag(GnrObject):
         :param _position: allow to set a new value at a particular position among its brothers
                           Default value is ``>``. You can use one of the following types:
 
-                              +----------------------------+----------------------------------------------------------------------+
-                              | *Position's attributes*    |  Description                                                         |
-                              +============================+======================================================================+
-                              | ``'<'``                    | Set the value as the first value of the Bag                          |
-                              +----------------------------+----------------------------------------------------------------------+
-                              | ``'>'``                    | Set the value as the last value of the Bag                           |
-                              +----------------------------+----------------------------------------------------------------------+
-                              | ``'<label'``               | Set the value in the previous position respect to the labelled one   |
-                              +----------------------------+----------------------------------------------------------------------+
-                              | ``'>label'``               | Set the value in the position next to the labelled one               |
-                              +----------------------------+----------------------------------------------------------------------+
-                              | ``'<#index'``              | Set the value in the previous position respect to the indexed one    |
-                              +----------------------------+----------------------------------------------------------------------+
-                              | ``'>#index'``              | Set the value in the position next to the indexed one                |
-                              +----------------------------+----------------------------------------------------------------------+
-                              | ``'#index'``               | Set the value in a determined position indicated by ``index`` number |
-                              +----------------------------+----------------------------------------------------------------------+
+                              +----------------------------+------------------------------------+
+                              | *Position's attributes*    |  Description                       |
+                              +============================+====================================+
+                              | ``'<'``                    | Set the value as the first value   |
+                              |                            | of the Bag                         |
+                              +----------------------------+------------------------------------+
+                              | ``'>'``                    | Set the value as the last value of |
+                              |                            | the Bag                            |
+                              +----------------------------+------------------------------------+
+                              | ``'<label'``               | Set the value in the previous      |
+                              |                            | position respect to the labelled   |
+                              |                            | one                                |
+                              +----------------------------+------------------------------------+
+                              | ``'>label'``               | Set the value in the position next |
+                              |                            | to the labelled one                |
+                              +----------------------------+------------------------------------+
+                              | ``'<#index'``              | Set the value in the previous      |
+                              |                            | position respect to the indexed    |
+                              |                            | one                                |
+                              +----------------------------+------------------------------------+
+                              | ``'>#index'``              | Set the value in the position next |
+                              |                            | to the indexed one                 |
+                              +----------------------------+------------------------------------+
+                              | ``'#index'``               | Set the value in a determined      |
+                              |                            | position indicated by ``index``    |
+                              |                            | number                             |
+                              +----------------------------+------------------------------------+
 
         :param _validators: it specifies the value's validators to set
         :param \*\*kwargs: attributes AND/OR validators
@@ -1431,7 +1495,7 @@ class Bag(GnrObject):
         Example:
 
         >>> beatles = Bag()
-        >>> beatles.setItem('member','John')    # alternatively, you could write beatles.addItem('member','John')
+        >>> beatles.setItem('member','John')  # alternatively: beatles.addItem('member','John')
         >>> beatles.addItem('member','Paul')
         >>> beatles.addItem('member','George')
         >>> beatles.addItem('member','Ringo')
@@ -1441,8 +1505,10 @@ class Bag(GnrObject):
         2 - (str) member: George
         3 - (str) member: Ringo
 
-        Obviously, you can't use the *square-brackets notations* within this method, because if you try to insert different
-        values with the same label you would lose all the values except for the last one"""
+        Obviously, you can't use the *square-brackets notations* within this method, because
+        if you try to insert different values with the same label you would lose all the
+        values except for the last one.
+        """
         return self.setItem(item_path, item_value, _attributes=_attributes, _position=_position,
                             _duplicate=True, _validators=_validators, **kwargs)
 
@@ -1450,8 +1516,8 @@ class Bag(GnrObject):
     def setItem(self, item_path, item_value, _attributes=None, _position=None, _duplicate=False,
                 _updattr=False, _validators=None, _removeNullAttributes=True, _reason=None, **kwargs):
         """Set an item (values and eventually attributes) to your Bag using a path in the form
-        ``label1.label2...labelN``. If path already exists, it overwrites the value at the given path.
-        Return the Bag.
+        ``label1.label2...labelN``. If path already exists, it overwrites the value at the
+        given path.  Return the Bag.
 
         The default behaviour of ``setItem()`` is to add the new value as the last element.
         You can change this trend with the *_position* argument, who provides a compact
@@ -1460,27 +1526,38 @@ class Bag(GnrObject):
         :param item_path: the path of the given item
         :param item_value: the value to set
         :param _attributes:  it specified, the value's attributes to set
-        :param _position: it is possible to set a new value at a particular position among its brothers.
+        :param _position: it is possible to set a new value at a particular position among
+                          its brothers.
 
                           *expression* must be a string of the following types:
 
-                          +----------------------------+----------------------------------------------------------------------+
-                          | *Expressions*              |  Description                                                         |
-                          +============================+======================================================================+
-                          | ``'<'``                    | Set the value as the first value of the Bag                          |
-                          +----------------------------+----------------------------------------------------------------------+
-                          | ``'>'``                    | Set the value as the last value of the Bag                           |
-                          +----------------------------+----------------------------------------------------------------------+
-                          | ``'<label'``               | Set the value in the previous position respect to the labelled one   |
-                          +----------------------------+----------------------------------------------------------------------+
-                          | ``'>label'``               | Set the value in the position next to the labelled one               |
-                          +----------------------------+----------------------------------------------------------------------+
-                          | ``'<#index'``              | Set the value in the previous position respect to the indexed one    |
-                          +----------------------------+----------------------------------------------------------------------+
-                          | ``'>#index'``              | Set the value in the position next to the indexed one                |
-                          +----------------------------+----------------------------------------------------------------------+
-                          | ``'#index'``               | Set the value in a determined position indicated by ``index`` number |
-                          +----------------------------+----------------------------------------------------------------------+
+                              +----------------------------+------------------------------------+
+                              | *Position's attributes*    |  Description                       |
+                              +============================+====================================+
+                              | ``'<'``                    | Set the value as the first value   |
+                              |                            | of the Bag                         |
+                              +----------------------------+------------------------------------+
+                              | ``'>'``                    | Set the value as the last value of |
+                              |                            | the Bag                            |
+                              +----------------------------+------------------------------------+
+                              | ``'<label'``               | Set the value in the previous      |
+                              |                            | position respect to the labelled   |
+                              |                            | one                                |
+                              +----------------------------+------------------------------------+
+                              | ``'>label'``               | Set the value in the position next |
+                              |                            | to the labelled one                |
+                              +----------------------------+------------------------------------+
+                              | ``'<#index'``              | Set the value in the previous      |
+                              |                            | position respect to the indexed    |
+                              |                            | one                                |
+                              +----------------------------+------------------------------------+
+                              | ``'>#index'``              | Set the value in the position next |
+                              |                            | to the indexed one                 |
+                              +----------------------------+------------------------------------+
+                              | ``'#index'``               | Set the value in a determined      |
+                              |                            | position indicated by ``index``    |
+                              |                            | number                             |
+                              +----------------------------+------------------------------------+
 
         :param _duplicate: boolean. Specify if a node with an existing path overwrite the value or
                            append to it the new one
@@ -1523,8 +1600,9 @@ class Bag(GnrObject):
             0 - (Bag) c:
                 0 - (int) d: 2
 
-        .. note:: if you have to use the ``_position`` attribute you can't use the square-brackets notation"""
-
+        .. note:: if you have to use the ``_position`` attribute you can't use the
+                  square-brackets notation
+        """
         if kwargs:
             _attributes = dict(_attributes or {})
             _validators = dict(_validators or {})
@@ -1588,7 +1666,8 @@ class Bag(GnrObject):
         >>> mybag.defineSymbol(base ='params.base',  height='params.height')
         >>> mybag['rect.perimeter']= mybag.formula('calculate_perimeter')
         >>> print(mybag['rect.perimeter'])
-        60"""
+        60
+        """
         if self._symbols == None:
             self._symbols = {}
         self._symbols.update(kwargs)
@@ -1596,7 +1675,9 @@ class Bag(GnrObject):
     def defineFormula(self, **kwargs):
         """Define a formula that uses defined symbols
 
-        :param kwargs: a key-value couple which represents the formula and the string that describes it"""
+        :param kwargs: a key-value couple which represents the formula and the string that
+                       describes it
+        """
         if self._symbols == None:
             self._symbols = {}
         for key, value in kwargs.items():
@@ -1606,7 +1687,8 @@ class Bag(GnrObject):
         """Set a BagFormula resolver
 
         :param formula: a string that represents the expression with symbolic vars
-        :param \*\*kwargs: links between symbols and paths associated to their values"""
+        :param \*\*kwargs: links between symbols and paths associated to their values
+        """
         self.setBackRef()
         if self._symbols == None:
             self._symbols = {}
@@ -1618,7 +1700,8 @@ class Bag(GnrObject):
     def getResolver(self, path):
         """This method get the resolver of the node at the given path
 
-        :param path: the path of the node"""
+        :param path: the path of the node
+        """
         return self.getNode(path).getResolver()
 
     getFormula = getResolver
@@ -1627,7 +1710,8 @@ class Bag(GnrObject):
         """Set a resolver into the node at the given path
 
         :param path: the path of the node
-        :param resolver: the resolver to set"""
+        :param resolver: the resolver to set
+        """
         return self.setItem(path, None, resolver=resolver)
 
     def setBackRef(self, node=None, parent=None):
@@ -1635,7 +1719,8 @@ class Bag(GnrObject):
         tree-leaf model: a Bag can have only one Parent and it knows this reference
 
         :param node: the parent node
-        :param parent: TODO"""
+        :param parent: TODO
+        """
         if self._backref != True:
             self._backref = True
             self.parent = parent
@@ -1718,11 +1803,13 @@ class Bag(GnrObject):
 
     # -------------------- index --------------------------------
     def _index(self, label):
-        """Return the label position into a given Bag. It is not recursive, so it works just in the current level.
-        The label can be '#n' where n is the position. The label can be '#attribute=value'.
-        If the label doesn't exist it returns -1. The mach is not case sensitive
+        """Return the label position into a given Bag.  It is not recursive, so it works just
+        in the current level.
+        The label can be '#n' where n is the position.  The label can be '#attribute=value'.
+        If the label doesn't exist it returns -1.  The mach is not case sensitive.
 
-        :param label: a not hierarchical label"""
+        :param label: a not hierarchical label
+        """
         result = -1
         if label.startswith('#'):
             if '=' in label:
@@ -1751,7 +1838,8 @@ class Bag(GnrObject):
 
         :param destination: it is the destination path; default is 'None'
         :param bin: boolean; if ``False`` the Bag will be pickled in ASCII code,
-                             if ``True`` the Bag will be pickled in a binary format"""
+                             if ``True`` the Bag will be pickled in a binary format
+        """
         if not destination:
             return pickle.dumps(self, bin)
         if isinstance(destination, file):
@@ -1766,7 +1854,8 @@ class Bag(GnrObject):
     def unpickle(self, source):
         """Unpickle a pickled Bag
 
-        :param source: the source path"""
+        :param source: the source path
+        """
         source, fromFile, mode = self._sourcePrepare(source)
         if source and mode == 'pickle':
             self[:] = self._unpickle(source, fromFile)
@@ -1785,7 +1874,8 @@ class Bag(GnrObject):
 
         :param name: TODO
         :param argstring: TODO
-        :param func: TODO"""
+        :param func: TODO
+        """
         setCallable(self, name, argstring=argstring, func=func)
 
     # -------------------- toXml --------------------------------
@@ -1809,7 +1899,8 @@ class Bag(GnrObject):
         :param typevalue: boolean. If ``True``, keep the value's type
         :param unresolved: boolean. TODO
         :param addBagTypeAttr: boolean. TODO
-        :param autocreate: boolean. If ``True``, it creates all the not existing nodes of the pathlist
+        :param autocreate: boolean. If ``True``, it creates all the not existing nodes
+                                    of the pathlist
         :param translate_cb: TODO
         :param self_closed_tags: TODO
         :param omitUnknownTypes: boolean. TODO
@@ -1824,7 +1915,8 @@ class Bag(GnrObject):
         '<?xml version=\'1.0\' encoding=\'iso-8859-15\'?>
         <GenRoBag>
         <aa><bb T="L">
-        4567</bb></aa></GenRoBag>'"""
+        4567</bb></aa></GenRoBag>'
+        """
         from gnr.core.gnrbagxml import BagToXml
 
         return BagToXml().build(self, filename=filename, encoding=encoding, typeattrs=typeattrs, typevalue=typevalue,
@@ -1837,7 +1929,8 @@ class Bag(GnrObject):
     def fillFrom(self, source):
         """Fill a void Bag from a source (basestring, Bag or list)
 
-        :param source: the source for the Bag"""
+        :param source: the source for the Bag
+        """
         if isinstance(source, six.string_types):
             b = self._fromSource(*self._sourcePrepare(source))
             if not b:
@@ -1870,7 +1963,8 @@ class Bag(GnrObject):
         :param source: the source string or source URI
         :param fromFile: flag that says if source is eventually an URI
         :param mode: flag of the importation mode (XML, pickle or VCARD)
-        :returns: a Bag from _unpickle() method or from _fromXml() method"""
+        :returns: a Bag from _unpickle() method or from _fromXml() method
+        """
         if not source:
             return
 
@@ -1901,7 +1995,8 @@ class Bag(GnrObject):
 
         Anyway source can be a well-formed XML document, or a raw one,or even a
         pickled bag. In any of this cases the method sets the value of the flag
-        "mode" to xml, vcard or pickle and returns it with \"source\" and \"fromFile\""""
+        "mode" to xml, vcard or pickle and returns it with \"source\" and \"fromFile\"
+        """
         originalsource = source
         if source.startswith('<'):
             return source, False, 'xml'
@@ -1980,7 +2075,8 @@ class Bag(GnrObject):
         :param source: the XML source to be loaded in the Bag
         :param catalog: TODO
         :param bagcls: TODO
-        :param empty: TODO"""
+        :param empty: TODO
+        """
         source, fromFile, mode = self._sourcePrepare(source)
         self._nodes[:] = self._fromXml(source, fromFile, catalog=catalog,
                                        bagcls=bagcls, empty=empty)
@@ -2024,7 +2120,8 @@ class Bag(GnrObject):
     def getIndexList(self, asText=False):
         """Return the Bag index as a plan list of the Nodes paths
 
-        :param asText: TODO"""
+        :param asText: TODO
+        """
         l = self.getIndex()
         l = ['.'.join(x) for x, y in l]
         if asText:
@@ -2036,14 +2133,16 @@ class Bag(GnrObject):
 
         :param path: node's path
         :param validator: validation's type
-        :param parameterString: a string which contains the parameters for the validation"""
+        :param parameterString: a string which contains the parameters for the validation
+        """
         self.getNode(path, autocreate=True).addValidator(validator, parameterString)
 
     def removeValidator(self, path, validator):
         """Remove a node's validator at the given path
 
         :param path: node's path
-        :param validator: validation's type"""
+        :param validator: validation's type
+        """
         self.getNode(path).removeValidator(validator)
 
     def _onNodeChanged(self, node, pathlist, evt, oldvalue=None, reason=None):
@@ -2053,7 +2152,8 @@ class Bag(GnrObject):
         :param pathlist: it includes the Bag subscribed's path linked to the node
                          where the event was catched
         :param evt: it is the event type, that is insert, delete, upd_value or upd_attrs
-        :param oldvalue: it is the previous node's value"""
+        :param oldvalue: it is the previous node's value
+        """
         for s in self._upd_subscribers.values():
             s(node=node, pathlist=pathlist, oldvalue=oldvalue, evt=evt, reason=reason)
         if self.parent:
@@ -2066,7 +2166,8 @@ class Bag(GnrObject):
         :param node: The node inserted
         :param ind: TODO
         :param pathlist: it includes the Bag subscribed's path linked to the node
-                         where the event was catched"""
+                         where the event was catched
+        """
         parent = node.parentbag
         if parent != None and parent.backref and hasattr(node._value, '_htraverse'):
             node._value.setBackRef(node=node, parent=parent)
@@ -2085,7 +2186,8 @@ class Bag(GnrObject):
         :param node: The node inserted
         :param ind: TODO
         :param pathlist: it includes the Bag subscribed's path linked to the node
-                         where the event was catched"""
+                         where the event was catched
+        """
         for s in self._del_subscribers.values():
             s(node=node, pathlist=pathlist, ind=ind, evt='del', reason=reason)
         if self.parent:
@@ -2110,7 +2212,8 @@ class Bag(GnrObject):
         :param insert: the eventhandler function linked to insert event
         :param delete: the eventhandler function linked to delete event
         :param any: the eventhandler function linked to do whenever something
-                    (delete, insert or update action) happens"""
+                    (delete, insert or update action) happens
+        """
         if self.backref == False:
             self.setBackRef()
 
@@ -2126,7 +2229,8 @@ class Bag(GnrObject):
         :param insert: the eventhandler function linked to insert event
         :param delete: the eventhandler function linked to delete event
         :param any: the eventhandler function linked to do whenever something
-                    (delete, insert or update action) happens"""
+                    (delete, insert or update action) happens
+        """
         if update or any:
             self._upd_subscribers.pop(subscriberId, None)
         if insert or any:
@@ -2138,7 +2242,8 @@ class Bag(GnrObject):
         """An alternative syntax for a :class:`BagCbResolver` call
 
         :param path: TODO
-        :param callback: TODO"""
+        :param callback: TODO
+        """
         resolver = BagCbResolver(callback, **kwargs)
         self.setItem(path, resolver, **kwargs)
 
@@ -2147,7 +2252,8 @@ class Bag(GnrObject):
 
         :param pathlist: TODO
         :param callback: TODO
-        :param result: TODO"""
+        :param result: TODO
+        """
         if result is None:
             result = []
         if isinstance(pathlist, six.string_types):
@@ -2302,7 +2408,8 @@ class BagValidationList(object):
     """This class provides the validation system for a BagNode. This is a list
     of validators related to a BagNode. This class is used only from the addValidator
     and removeValidator methods of the Bag and BagNode' classes.
-    All the methods of this class must be considered private."""
+    All the methods of this class must be considered private.
+    """
 
     def __init__(self, parentNode):
         self.parentNode = parentNode
@@ -2336,7 +2443,8 @@ class BagValidationList(object):
         """Add a new validator to the BagValidationList.
 
         :param validator: type of validator
-        :param parameterString: the string that contains the parameters for the validators"""
+        :param parameterString: the string that contains the parameters for the validators
+        """
         if isinstance(validator, six.string_types):
             validator = getattr(self, 'validate_%s' % validator, self.defaultExt)
         if not validator in self.validators:
@@ -2346,7 +2454,8 @@ class BagValidationList(object):
     def remove(self, validator):
         """Remove a validator
 
-        :param validator: the validator to remove"""
+        :param validator: the validator to remove
+        """
         if validator in self.validators:
             self.validators.remove(validator)
 
@@ -2361,7 +2470,8 @@ class BagValidationList(object):
 
         :param value: TODO
         :param oldvalue: TODO
-        :param parameterString: values = 'upper' or 'lower' or 'capitalize'"""
+        :param parameterString: values = 'upper' or 'lower' or 'capitalize'
+        """
         mode = parameterString
         if not isinstance(value, six.string_types):
             raise BagValidationError('not a string value', value, 'The value is not a string')
@@ -2379,7 +2489,8 @@ class BagValidationList(object):
 
         :param value: TODO
         :param oldvalue: TODO
-        :param parameterString: TODO"""
+        :param parameterString: TODO
+        """
         values = parameterString.split(',')
         if not value in values:
             raise BagValidationError('NotInList', value, 'The value is non in list')
@@ -2390,7 +2501,8 @@ class BagValidationList(object):
         """Provide a validaton for Host address value
 
         :param value: TODO
-        :param oldvalue: TODO"""
+        :param oldvalue: TODO
+        """
         import socket
 
         try:
@@ -2408,7 +2520,8 @@ class BagValidationList(object):
 
         :param value: TODO
         :param oldvalue: TODO
-        :param parameterString: TODO"""
+        :param parameterString: TODO
+        """
         minmax = parameterString.split(',')
         min = minmax[0]
         max = minmax[1]
@@ -2422,7 +2535,8 @@ class BagValidationList(object):
     def coerceFromText(self, value):
         """TODO
 
-        :param value: TODO"""
+        :param value: TODO
+        """
         converter = GnrClassCatalog()
         value = converter.fromText(value, self.gnrtype)
 
@@ -2431,7 +2545,8 @@ class BagValidationList(object):
 
         :param value: TODO
         :param oldvalue: TODO
-        :param parameterString: TODO"""
+        :param parameterString: TODO
+        """
         return value
 
     def defaultExt(self, value, oldvalue, parameterString):
@@ -2439,14 +2554,16 @@ class BagValidationList(object):
 
         :param value: TODO
         :param oldvalue: TODO
-        :param parameterString: TODO"""
+        :param parameterString: TODO
+        """
         print('manca il validatore')
 
 
 class BagResolver(object):
     """BagResolver is an abstract class, that defines the interface for a new kind
     of dynamic objects. By "Dynamic" property we mean a property that is calculated
-    in real-time but looks like a static one"""
+    in real-time but looks like a static one.
+    """
     classKwargs = {'cacheTime': 0, 'readOnly': True}
     classArgs = []
 
@@ -2679,7 +2796,8 @@ class GeoCoderBag(Bag):
         """TODO
 
         :param key: TODO
-        :param address: TODO"""
+        :param address: TODO
+        """
         urlparams = dict(address=address, sensor='false')
         if language:
             urlparams['language'] = language
@@ -2826,7 +2944,8 @@ class DirectoryResolver(BagResolver):
         """TODO
 
         :param name: TODO
-        :param ext: TODO"""
+        :param ext: TODO
+        """
         if ext != 'directory' and not self.dropext:
             name = '%s_%s' % (name, ext)
         return name.replace('.', '_')
@@ -2834,13 +2953,15 @@ class DirectoryResolver(BagResolver):
     def processor_directory(self, path):
         """TODO
 
-        :param path: TODO"""
+        :param path: TODO
+        """
         return DirectoryResolver(path, os.path.join(self.relocate, os.path.basename(path)), **self.instanceKwargs)
 
     def processor_xml(self, path):
         """TODO
 
-        :param path: TODO"""
+        :param path: TODO
+        """
         kwargs = dict(self.instanceKwargs)
         kwargs['path'] = path
         return XmlDocResolver(**kwargs)
@@ -2852,7 +2973,8 @@ class DirectoryResolver(BagResolver):
     def processor_txt(self, path):
         """TODO
 
-        :param path: TODO"""
+        :param path: TODO
+        """
         kwargs = dict(self.instanceKwargs)
         kwargs['path'] = path
         return TxtDocResolver(**kwargs)
@@ -2860,7 +2982,8 @@ class DirectoryResolver(BagResolver):
     def processor_default(self, path):
         """TODO
 
-        :param path: TODO"""
+        :param path: TODO
+        """
         return None
 
 

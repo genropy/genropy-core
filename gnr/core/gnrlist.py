@@ -21,8 +21,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 
-"""
-Some useful operations on lists.
+"""Some useful operations on lists.
 """
 from gnr.core.gnrlang import GnrException
 from gnr.core.gnrdecorator import deprecated
@@ -40,7 +39,8 @@ def findByAttr(l, **kwargs):
     """Find elements in the ``l`` list having attributes with names and values as
     kwargs items. Return the list's attributes
 
-    :param l: the list"""
+    :param l: the list
+    """
     result = list(l)
     for k, v in kwargs.items():
         result = [x for x in result if getattr(x, k, None) == v]
@@ -52,9 +52,11 @@ def sortByItem(l, *args, **kwargs):
     Return the list
 
     :param l: the list
-    :param args: a list of keys to sort for. Each key can be reverse sorted by adding ``:d`` to the key.
+    :param args: a list of keys to sort for. Each key can be reverse sorted by adding ``:d`` to
+                 the key.
     :param hkeys: if ``True`` and a key contains ``.``, then it is interpreted as a hierarchical
-                  path and sub dict are looked for"""
+                  path and sub dict are looked for
+    """
     def safeCmp(a, b):
         if a is None:
             if b is None:
@@ -109,7 +111,8 @@ def sortByItem(l, *args, **kwargs):
 def sortByAttr(l, *args):
     """TODO
 
-    :param l: the list"""
+    :param l: the list
+    """
     # da verificare
     def hGetAttr(obj, attr):
         if obj is None:
@@ -180,7 +183,8 @@ def readTab(doc):
 def readCSV_new(doc):
     """This reads a CSV file - done by Jeff
 
-    :param doc: the file to read"""
+    :param doc: the file to read
+    """
     if isinstance(doc, basestring):
         f = open(doc)
     else:
@@ -212,7 +216,8 @@ def readCSV_new(doc):
 def readCSV(doc):
     """read a CSV file
 
-    :param doc: the file to read"""
+    :param doc: the file to read
+    """
     if isinstance(doc, basestring):
         f = open(doc)
     else:
@@ -239,7 +244,8 @@ def readCSV(doc):
 def readXLS(doc):
     """Read an XLS file
 
-    :param doc: the file to read"""
+    :param doc: the file to read
+    """
     import xlrd
 
     if isinstance(doc, basestring):
@@ -328,7 +334,9 @@ class CsvReader(object):
 
 
 class GnrNamedList(object):
-    """Row object. Allow access to data by column name. Allow also to add columns and alter data."""
+    """Row object. Allow access to data by column name. Allow also to add columns and
+    alter data.
+    """
 
     def __init__(self, index, values=None):
         self._index = index
@@ -382,7 +390,8 @@ class GnrNamedList(object):
         """Same of ``get`` method's dict
 
         :param x: TODO
-        :param default: the value returned if ``self[x]`` is ``None``"""
+        :param default: the value returned if ``self[x]`` is ``None``
+        """
         try:
             return self[x]
         except:
@@ -392,7 +401,8 @@ class GnrNamedList(object):
         """Same of ``has_key`` method's dict. Return ``True`` if the key is in the dict,
         ``False`` otherwise
 
-        :param x: the key to test"""
+        :param x: the key to test
+        """
         return self._index.has_key(x)
 
     def items(self):
@@ -423,7 +433,8 @@ class GnrNamedList(object):
         """Same of ``pop`` method's dict
 
         :param x: TODO
-        :param dflt: TODO"""
+        :param dflt: TODO
+        """
         if type(x) != int:
             x = self._index[x]
         try:
@@ -448,7 +459,8 @@ class GnrNamedList(object):
         """It is a utility method of the sql :meth:`fetch() <gnr.sql.gnrsqldata.SqlQuery.fetch()>`
         method. It returns a list of namedlist (that is, a list of dictionaries).
 
-        :param columns: the items of the namedlist dict"""
+        :param columns: the items of the namedlist dict
+        """
         if columns:
             return [(k, self[k]) for k in columns]
         else:
@@ -458,7 +470,8 @@ class GnrNamedList(object):
         """It is a utility method of the sql :meth:`fetch() <gnr.sql.gnrsqldata.SqlQuery.fetch()>`
         method. It returns a list of namedlist (that is, a list of dictionaries).
 
-        :param columns: the values of the namedlist dict"""
+        :param columns: the values of the namedlist dict
+        """
         if columns:
             return [self[k] for k in columns]
         else:

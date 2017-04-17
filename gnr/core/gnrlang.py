@@ -113,13 +113,15 @@ def thlocal():
 
 
 def boolean(x):
-    """Control if a string is "True" or "False" respect to Genro acceptable "True" and "False" strings
-    and return ``True`` (or ``False``). The control is executed on the string uppercased
+    """Control if a string is "True" or "False" respect to Genro acceptable "True" and
+    "False" strings and return ``True`` (or ``False``). The control is executed on the
+    string uppercased.
 
     * "True" strings: ``TRUE``, ``T``, ``Y``, ``YES``, ``1``
     * "False" strings: ``FALSE``, ``F``, ``N``, ``NO``, ``0``
 
-    :param x: the string to be checked"""
+    :param x: the string to be checked
+    """
     if isinstance(x, basestring):
         x = x.upper()
         if x in ('TRUE', 'T', 'Y', 'YES', '1'):
@@ -133,7 +135,8 @@ def objectExtract(myobj, f):
     """TODO
 
     :param myobj: TODO
-    :param f: TODO"""
+    :param f: TODO
+    """
     lf = len(f)
     return dict([(k[lf:], getattr(myobj, k)) for k in dir(myobj) if k.startswith(f)])
 
@@ -141,7 +144,8 @@ def objectExtract(myobj, f):
 def importModule(module):
     """TODO
 
-    :param module: the module to be imported"""
+    :param module: the module to be imported
+    """
     if module not in sys.modules:
         __import__(module)
     return sys.modules[module]
@@ -150,7 +154,8 @@ def importModule(module):
 def debug_call(func):
     """TODO
 
-    :param func: TODO"""
+    :param func: TODO
+    """
 
     def decore(self, *args, **kwargs):
         tloc = thlocal()
@@ -170,7 +175,8 @@ def debug_call_new(attribute_list=None, print_time=False):
     """TODO
 
     :param time_list: TODO.
-    :param print_time: boolean. TODO"""
+    :param print_time: boolean. TODO
+    """
     attribute_list = attribute_list or []
 
     def decore(func):
@@ -205,7 +211,8 @@ def timer_call(time_list=None, print_time=True):
     """TODO
 
     :param time_list: TODO.
-    :param print_time: boolean. TODO"""
+    :param print_time: boolean. TODO
+    """
     time_list = time_list or []
 
     def decore(func):
@@ -230,7 +237,9 @@ def timer_call(time_list=None, print_time=True):
 
 
 def getUuid():
-    """Return a Python Universally Unique IDentifier 3 (UUID3) through the Python \'base64.urlsafe_b64encode\' method"""
+    """Return a Python Universally Unique IDentifier 3 (UUID3) through the Python
+    \'base64.urlsafe_b64encode\' method.
+    """
     return str(base64.urlsafe_b64encode(
         uuid.uuid3(uuid.uuid1(), str(thread.get_ident())).bytes))[0:22].replace('-', '_')
 
@@ -239,14 +248,16 @@ def safe_dict(d):
     """Use the str method, coercing all the dict keys into a string type and return the dict
     with string-type keys
 
-    :param d: a dict"""
+    :param d: a dict
+    """
     return dict([(str(k), v) for k, v in d.items()])
 
 
 def uniquify(seq):
     """TODO
 
-    :param seq: TODO"""
+    :param seq: TODO
+    """
     def seen_function(seq):
         seen = set()
         for x in seq:
@@ -267,7 +278,8 @@ def moduleDict(module, proplist):
     """TODO
 
     :param module: TODO
-    :param proplist: TODO"""
+    :param proplist: TODO
+    """
     result = {}
     if isinstance(module, basestring):
         module = gnrImport(module)
@@ -285,7 +297,8 @@ def gnrImport(source, importAs=None, avoidDup=False, silent=True, avoid_module_c
 
     :param source: TODO
     :param importAs: TODO
-    :param avoidDup: if ``True``, allow to avoid duplicates"""
+    :param avoidDup: if ``True``, allow to avoid duplicates
+    """
     modkey = source
     path_sep = os.path.sep
     if path_sep in source:
@@ -356,20 +369,23 @@ class GnrException(Exception):
     def setLocalizer(self, localizer):
         """TODO
 
-        :param localizer: TODO"""
+        :param localizer: TODO
+        """
         self.localizer = localizer
 
     def localize(self, v):
         """TODO
 
-        :param v: TODO"""
+        :param v: TODO
+        """
         return self.localizer.translate(v)
 
     def localizedMsg(self, msg, msgargs):
         """TODO
 
         :param msg: TODO
-        :param msgargs: TODO"""
+        :param msgargs: TODO
+        """
         if self.localizer:
             msg = self.localize(msg)
             for k, v in msgargs.items():
@@ -392,7 +408,8 @@ class GnrObject(object):
     def mixin(self, cls, **kwargs):
         """TODO
 
-        :param cls: the python class to mixin"""
+        :param cls: the python class to mixin
+        """
         if isinstance(cls, basestring):
             drive, cls = os.path.splitdrive(cls)
             modulename, cls = cls.split(':')
@@ -443,7 +460,8 @@ class GnrImportedModule(object):
     def getDoc(self, memberName=None):
         """TODO
 
-        :param memberName: TODO"""
+        :param memberName: TODO
+        """
         m = self.module
         if memberName:
             m = self.getMember(memberName)
@@ -458,7 +476,8 @@ class GnrImportedModule(object):
     def getMember(self, memberName):
         """TODO
 
-        :param memberName: TODO"""
+        :param memberName: TODO
+        """
         return getattr(self.module, memberName, None)
 
     def load(self):
@@ -508,7 +527,8 @@ class GnrAddOn(object):
     def recorderDo(self, recorder=None):
         """TODO
 
-        :param recorder: TODO"""
+        :param recorder: TODO
+        """
         if not recorder:
             recorder = self.__recorder__[:]
         result = []
@@ -520,7 +540,8 @@ class GnrAddOn(object):
     def superdo(self, *args, **kwargs):
         """Like calling :meth:`super()` with the right arguments
 
-        ??? check if it works on multiple levels"""
+        ??? check if it works on multiple levels
+        """
         frame = sys._getframe(1)
         superObj = super(self.__class__, self)
         selector = frame.f_code.co_name
@@ -556,7 +577,8 @@ class GnrAddOn(object):
 
         :param src: is a string of a python function or an imported function
         :param importAs: a name for identify the function in error messages
-        :param bound: boolean. If ``True`` the function will be bounded to this instance"""
+        :param bound: boolean. If ``True`` the function will be bounded to this instance
+        """
         if isinstance(src, basestring):
             if not importAs:
                 importAs = 'abcd'
@@ -593,7 +615,8 @@ class GnrRemeberableAddOn(GnrAddOn):
     def rememberMe(self, name=None):
         """TODO
 
-        :param name: TODO"""
+        :param name: TODO
+        """
         objid = id(self)
         self._gnr_members__[objid] = self
         if name:
@@ -606,7 +629,8 @@ class GnrRemeberableAddOn(GnrAddOn):
     def rememberedMembers(cls):
         """TODO
 
-        :param cls: TODO"""
+        :param cls: TODO
+        """
         return [v for v in cls._gnr_members__.values()]
 
     rememberedMembers = classmethod(rememberedMembers)
@@ -614,7 +638,8 @@ class GnrRemeberableAddOn(GnrAddOn):
     def rememberedNamedMembers(cls):
         """TODO
 
-        :param cls: TODO"""
+        :param cls: TODO
+        """
         return dict([(name, cls._gnr_members__[objid]) for name, objid in cls._gnr_namedmembers__.items()])
 
     rememberedNamedMembers = classmethod(rememberedNamedMembers)
@@ -623,7 +648,8 @@ class GnrRemeberableAddOn(GnrAddOn):
         """TODO
 
         :param cls: TODO
-        :param name: TODO"""
+        :param name: TODO
+        """
         objid = cls._gnr_namedmembers__.get(name, None)
         if objid:
             return cls._gnr_members__[objid]
@@ -638,7 +664,8 @@ class GnrMetaString(object):
     def glossary(cls):
         """TODO
 
-        :param cls: TODO"""
+        :param cls: TODO
+        """
         return cls._glossary.keys()
 
     glossary = classmethod(glossary)
@@ -683,7 +710,8 @@ def addCallable(obj, method):
     """TODO
 
     :param obj: TODO
-    :param method: TODO"""
+    :param method: TODO
+    """
     name = method.__name__
     setattr(obj, name, method)
 
@@ -693,7 +721,8 @@ def addBoundCallable(obj, method, importAs=None):
 
     :param obj: TODO
     :param method: TODO
-    :param importAs: TODO"""
+    :param importAs: TODO
+    """
     z = type(obj.__init__)
     k = z(method, obj, obj.__class__)
     if not importAs:
@@ -706,7 +735,8 @@ def setMethodFromText(obj, src, importAs):
 
     :param obj: TODO
     :param src: TODO
-    :param importAs: TODO"""
+    :param importAs: TODO
+    """
     compiled = compile(src, 'xyz', 'exec')
     auxDict = {}
     exec compiled in auxDict
@@ -716,7 +746,8 @@ def setMethodFromText(obj, src, importAs):
 def getObjCallables(obj):
     """TODO
 
-    :param obj: TODO"""
+    :param obj: TODO
+    """
     return [(k, getattr(obj, k)) for k in dir(obj) if
             callable(getattr(obj, k)) and not k in ('__call__', '__class__', '__cmp__')]
 
@@ -724,14 +755,16 @@ def getObjCallables(obj):
 def getObjAttributes(obj):
     """TODO
 
-    :param obj: TODO"""
+    :param obj: TODO
+    """
     return [(k, getattr(obj, k)) for k in dir(obj) if not callable(getattr(obj, k))]
 
 
 def callables(obj):
     """TODO
 
-    :param obj: TODO"""
+    :param obj: TODO
+    """
     s = getObjCallables(obj)
     return '\n'.join([x for x, v in s])
 
@@ -739,7 +772,8 @@ def callables(obj):
 def testbound(self, n):
     """TODO
 
-    :param n: TODO"""
+    :param n: TODO
+    """
     self.special = n * '-'
     return self.special
 
@@ -784,7 +818,8 @@ def setCallable(obj, name, argstring=None, func='pass'):
     :param obj: TODO
     :param name: TODO
     :param argstring: TODO
-    :param func: TODO"""
+    :param func: TODO
+    """
     body = '    ' + '\n    '.join(func.split('\n'))
     if argstring:
         argstring = ',' + argstring
@@ -798,7 +833,8 @@ def cloneClass(name, source_class):
     """TODO
 
     :param name: TODO
-    :param source_class: TODO"""
+    :param source_class: TODO
+    """
     return type(name, source_class.__bases__, dict([(k, v) for k, v in source_class.__dict__.items()
                                                     if not k in ('__dict__', '__module__',
                                                                  '__weakref__', '__doc__')]))
@@ -807,7 +843,8 @@ def cloneClass(name, source_class):
 def moduleClasses(m):
     """TODO
 
-    :param m: TODO"""
+    :param m: TODO
+    """
     modulename = m.__name__
     return [x for x in dir(m) if (not x.startswith('__')) and getattr(getattr(m, x),
                                                                       '__module__',
@@ -822,7 +859,8 @@ def classMixin(target_class, source_class, methods=None, only_callables=True,
     :param source_class: TODO
     :param methods: TODO
     :param only_callables: TODO
-    :param exclude: TODO. If not *methods* then all methods are added"""
+    :param exclude: TODO. If not *methods* then all methods are added
+    """
     if isinstance(methods, basestring):
         methods = methods.split(',')
     if isinstance(exclude, basestring):
@@ -904,7 +942,8 @@ def classMixin(target_class, source_class, methods=None, only_callables=True,
 def base_visitor(cls):
     """TODO
 
-    :param cls: TODO"""
+    :param cls: TODO
+    """
     yield cls
     for base in cls.__bases__:
         for inner_base in base_visitor(base):
@@ -917,7 +956,8 @@ def instanceMixin(obj, source, methods=None, attributes=None, only_callables=Tru
                   prefix=None, suffix=None, mangling_kwargs=None, _mixined=None, **kwargs):
     """Add to the instance obj methods from 'source'
 
-    ``instanceMixin()`` method is decorated with the :meth:`extract_kwargs <gnr.core.gnrdecorator.extract_kwargs>` decorator
+    ``instanceMixin()`` method is decorated with the 
+    :meth:`extract_kwargs <gnr.core.gnrdecorator.extract_kwargs>` decorator
 
     :param obj: TODO
     :param source: it can be an instance or a class
@@ -926,7 +966,8 @@ def instanceMixin(obj, source, methods=None, attributes=None, only_callables=Tru
     :param only_callables: boolean. TODO
     :param exclude: TODO
     :param prefix: TODO
-    :param mangling_kwargs: TODO"""
+    :param mangling_kwargs: TODO
+    """
 
     if _mixined is None:
         _mixined = []
@@ -1012,7 +1053,8 @@ def instanceMixin(obj, source, methods=None, attributes=None, only_callables=Tru
 def safeStr(self, o):
     """Return a safe string
 
-    :param o: the string to be checked"""
+    :param o: the string to be checked
+    """
     if isinstance(o, unicode):
         return o.encode('UTF-8', 'ignore')
     else:
@@ -1050,7 +1092,8 @@ class GnrExpandible(object):
 def instanceOf(obj, *args, **kwargs):
     """TODO
 
-    :param obj: TODO"""
+    :param obj: TODO
+    """
     if isinstance(obj, basestring):
         drive, obj = os.path.splitdrive(obj)
         modulename, clsname = obj.split(':')
@@ -1090,7 +1133,8 @@ def errorLog(proc_name, host=None, from_address='', to_address=None, user=None, 
     :param from_address: the email sender
     :param to_address: the email receiver
     :param user: the username
-    :param password: the username's password"""
+    :param password: the username's password
+    """
     from gnr.utils.gnrmail import sendmail
 
     ts = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S: ')
@@ -1151,7 +1195,6 @@ def callAsync(call=None, call_args=None, call_kwargs=None, cb=None, cb_args=None
     :param cb_kwargs: kwargs dict for the callback invocation
     :param exit_timeout: max seconds to wait if the main process
             is exiting and 'call' is not yet completed. 0 or None waits forether
-
     """
     thread_params = dict(call=call, call_args=call_args, cb=cb,
                          cb_args=cb_args, cb_kwargs=cb_kwargs)

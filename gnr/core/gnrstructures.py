@@ -38,7 +38,8 @@ def valid_children(**kwargs):
 
 class GnrStructData(Bag):
     """This is a subclass of the :class:`Bag <gnr.core.gnrbag.Bag>` class that implements
-    functional syntax for adding particular elements to the tree"""
+    functional syntax for adding particular elements to the tree
+    """
     default_childname = '*_#'
     exceptions = dict(invalid_child_tag='Wrong insert child %(tag)s',
                       missing_child_tag='Missing child %(tag)s',
@@ -49,7 +50,8 @@ class GnrStructData(Bag):
         """Build the root instance for the given class and return it
 
         :param source: the filepath of the xml file
-        :param protocls: the structure class"""
+        :param protocls: the structure class
+        """
         if protocls:
             instance = protocls()
         else:
@@ -65,7 +67,8 @@ class GnrStructData(Bag):
         """TODO
 
         :param attrname: TODO
-        :param checker: TODO"""
+        :param checker: TODO
+        """
         if checker is None:
             checker = lambda v: True
         if isinstance(checker, basestring):
@@ -220,7 +223,8 @@ class GnrStructData(Bag):
     def save(self, path):
         """Saves the structure as an XML file
 
-        :param path: destination path of the saved file"""
+        :param path: destination path of the saved file
+        """
         self.toXml(path, typeattrs=False)
 
     def load(self, path):
@@ -234,8 +238,9 @@ class GnrStructData(Bag):
 
 
 class GnrStructObj(GnrObject):
-    """It is a tree of :class:`GnrObjects <gnr.core.gnrlang.GnrObject>` classes that it is auto-builded starting from
-    an instance of the :class:`GnrStructData` class"""
+    """It is a tree of :class:`GnrObjects <gnr.core.gnrlang.GnrObject>` classes that it is
+    auto-builded starting from an instance of the :class:`GnrStructData` class.
+    """
 
     def makeRoot(cls, parent, structnode, objclassdict, **kwargs):
         """Instantiate the root element
@@ -243,7 +248,8 @@ class GnrStructObj(GnrObject):
         :param cls: TODO
         :param parent: TODO
         :param structnode: TODO
-        :param objclassdict: dictionary of the classes"""
+        :param objclassdict: dictionary of the classes
+        """
         if isinstance(structnode, Bag):
             structnode = structnode.getNode('#0')
         tag = structnode.getAttr('tag').lower()
@@ -293,7 +299,8 @@ class GnrStructObj(GnrObject):
     def buildChildren(self, children):
         """TODO
 
-        :param children: TODO"""
+        :param children: TODO
+        """
         objclassdict = self.root.objclassdict
         for child in children:
             tag = child.getAttr('tag')
@@ -319,7 +326,8 @@ class GnrStructObj(GnrObject):
     def buildChild(self, childnode, **kwargs):
         """Build a child
 
-        :param childnode: the child node"""
+        :param childnode: the child node
+        """
         objclassdict = self.root.objclassdict
         tag = childnode.getAttr('tag').lower()
         if tag in objclassdict:
@@ -328,7 +336,8 @@ class GnrStructObj(GnrObject):
     def deleteChild(self, name):
         """Delete a child
 
-        :param name: the child name"""
+        :param name: the child name
+        """
         child = self.children.pop(name)
         child.deleteChildren()
         child.onDelete()
@@ -349,7 +358,8 @@ class GnrStructObj(GnrObject):
     def newChild(self, obj):
         """Hook method on creation of a new child
 
-        :param obj: TODO"""
+        :param obj: TODO
+        """
         pass
 
     def _get_root(self):
@@ -363,7 +373,8 @@ class GnrStructObj(GnrObject):
     def getById(self, id):
         """TODO
 
-        :param id: the id of the object"""
+        :param id: the id of the object
+        """
         return self.root.objdict.get(id, None)
 
     def getItem(self, path, default=None, static=False):
@@ -371,7 +382,8 @@ class GnrStructObj(GnrObject):
 
         :param path: TODO
         :param default: TODO
-        :param static: TODO"""
+        :param static: TODO
+        """
         if path.startswith('.'):
             return self.root[path[1:]]
         if path.startswith('!'):
@@ -390,7 +402,8 @@ class GnrStructObj(GnrObject):
         """Build a child
 
         :param name: TODO
-        :param default: TODO"""
+        :param default: TODO
+        """
         name = name.lower()
         if name in self.children:
             obj = self.children[name]
@@ -408,7 +421,8 @@ class GnrStructObj(GnrObject):
         """Build a child
 
         :param name: TODO
-        :param default: TODO"""
+        :param default: TODO
+        """
         return self.children.get(name.lower(), default=default)
 
     def _htraverse(self, pathlist, **kwargs):
@@ -484,7 +498,8 @@ class GnrStructObj(GnrObject):
     def newChild(self, child):
         """TODO
 
-        :param child: TODO"""
+        :param child: TODO
+        """
         pass
 
     def afterChildrenCreation(self):
@@ -504,7 +519,8 @@ class StructObjResolver(BagResolver):
     def init(self, obj):
         """TODO
 
-        :param obj: TODO"""
+        :param obj: TODO
+        """
         self.obj = obj
         self.alreadyCalled = False
 
@@ -553,7 +569,8 @@ class TestStructModule(object):
         """TODO
 
         :param name: TODO
-        :param path: TODO"""
+        :param path: TODO
+        """
         node = self.struct.getNode(path)
         self.roots[name] = GnrStructObj.root(node, self.structdict)
 

@@ -37,7 +37,8 @@ def localize(obj, format=None, currency=None, locale=None):
     :param obj: TODO
     :param format: TODO
     :param currency: TODO
-    :param locale: the current locale (e.g: en, en_us, it)"""
+    :param locale: the current locale (e.g: en, en_us, it)
+    """
     locale = (locale or DEFAULT_LOCALE).replace('-', '_').split(';')[0]
     if obj is None:
         return u''
@@ -67,7 +68,8 @@ def localize_number(obj, locale, format=None, currency=None):
     :param obj: TODO
     :param locale: the current locale (e.g: en, en_us, it)
     :param format: TODO
-    :param currency: TODO"""
+    :param currency: TODO
+    """
     if format:
         flist = format.split(';')
         if len(flist) > 2:
@@ -89,7 +91,8 @@ def localize_date(obj, locale, format=None, **kwargs):
 
     :param obj: TODO
     :param locale: the current locale (e.g: en, en_us, it)
-    :param format: TODO"""
+    :param format: TODO
+    """
     format = format or 'short'
     return dates.format_date(obj, format=format, locale=locale)
 
@@ -110,7 +113,8 @@ def localize_datetime(obj, locale, format=None, **kwargs):
 
     :param obj: TODO
     :param locale: the current locale (e.g: en, en_us, it)
-    :param format: TODO"""
+    :param format: TODO
+    """
     format = format or 'short'
     return dates.format_datetime(obj, format=format, locale=locale)
 
@@ -120,7 +124,8 @@ def localize_time(obj, locale, format=None, **kwargs):
 
     :param obj: TODO
     :param locale: the current locale (e.g: en, en_us, it)
-    :param format: TODO"""
+    :param format: TODO
+    """
     format = format or 'short'
     dt = datetime.datetime(1970, 1, 1, obj.hour, obj.minute,
                            obj.second, obj.microsecond, obj.tzinfo)
@@ -178,7 +183,8 @@ def parselocal_number(txt, locale):
     """TODO
 
     :param txt: TODO
-    :param locale: the current locale (e.g: en, en_us, it)"""
+    :param locale: the current locale (e.g: en, en_us, it)
+    """
     return numbers.parse_number(txt, locale)
 
 
@@ -186,7 +192,8 @@ def parselocal_float(txt, locale):
     """TODO
 
     :param txt: TODO
-    :param locale: the current locale (e.g: en, en_us, it)"""
+    :param locale: the current locale (e.g: en, en_us, it)
+    """
     loc = Locale.parse(locale).number_symbols
     txt = txt.replace(loc['group'], '')
     txt = txt.replace(loc['decimal'], '.')
@@ -197,7 +204,8 @@ def parselocal_decimal(txt, locale):
     """TODO
 
     :param txt: TODO
-    :param locale: the current locale (e.g: en, en_us, it)"""
+    :param locale: the current locale (e.g: en, en_us, it)
+    """
     loc = Locale.parse(locale).number_symbols
     txt = txt.replace(loc['group'], '')
     txt = txt.replace(loc['decimal'], '.')
@@ -208,7 +216,8 @@ def parselocal_date(txt, locale):
     """TODO
 
     :param txt: TODO
-    :param locale: the current locale (e.g: en, en_us, it)"""
+    :param locale: the current locale (e.g: en, en_us, it)
+    """
     if txt.isdigit() and len(txt) in (6, 8):  # is a date without separators: 101207
         result = {}
         format = dates.get_date_format(locale=locale).pattern.lower()
@@ -248,7 +257,8 @@ def parselocal_datetime(txt, locale):
     """TODO
 
     :param txt: TODO
-    :param locale: the current locale (e.g: en, en_us, it)"""
+    :param locale: the current locale (e.g: en, en_us, it)
+    """
     return dates.parse_datetime(txt, locale)
 
 
@@ -256,7 +266,8 @@ def parselocal_time(txt, locale):
     """TODO
 
     :param txt: TODO
-    :param locale: the current locale (e.g: en, en_us, it)"""
+    :param locale: the current locale (e.g: en, en_us, it)
+    """
     return dates.parse_time(txt, locale)
 
 
@@ -265,7 +276,8 @@ def parselocal(txt, cls, locale=None):
 
     :param txt: TODO
     :param cls: TODO
-    :param locale: the current locale (e.g: en, en_us, it)"""
+    :param locale: the current locale (e.g: en, en_us, it)
+    """
     locale = (locale or DEFAULT_LOCALE).replace('-', '_')
     if locale and '_' in locale:
         loc, country = locale.split('_')
@@ -284,7 +296,8 @@ def parselocal(txt, cls, locale=None):
 def getMonthNames(locale=None):
     """TODO
 
-    :param locale: the current locale (e.g: en, en_us, it)"""
+    :param locale: the current locale (e.g: en, en_us, it)
+    """
     locale = (locale or DEFAULT_LOCALE).replace('-', '_')
     d = dict([(v.lower(), k)
               for k, v in dates.get_month_names(width='wide', locale=locale).items()])
@@ -297,7 +310,8 @@ def getMonthNames(locale=None):
 def getDayNames(locale=None):
     """TODO
 
-    :param locale: the current locale (e.g: en, en_us, it)"""
+    :param locale: the current locale (e.g: en, en_us, it)
+    """
     locale = (locale or DEFAULT_LOCALE).replace('-', '_')
     d = dict([(v.lower(), k) for k, v in dates.get_day_names(width='wide', locale=locale).items()])
     d.update([(v.lower(), k) for k, v in dates.get_day_names(
@@ -308,7 +322,8 @@ def getDayNames(locale=None):
 def getQuarterNames(locale=None):
     """TODO
 
-    :param locale: the current locale (e.g: en, en_us, it)"""
+    :param locale: the current locale (e.g: en, en_us, it)
+    """
     locale = (locale or DEFAULT_LOCALE).replace('-', '_')
     d = dict([(v.lower(), k)
               for k, v in dates.get_quarter_names(width='wide', locale=locale).items()])
@@ -333,7 +348,8 @@ def getKeywords(sourcedict, keyword, locale=None):
     """TODO
 
     :param keyword: TODO
-    :param locale: the current locale (e.g: en, en_us, it)"""
+    :param locale: the current locale (e.g: en, en_us, it)
+    """
     locale = (locale or DEFAULT_LOCALE).replace('-', '_')
     keydict = sourcedict.get(locale, {})
     if not keydict and len(locale) > 2:  # like en_us
