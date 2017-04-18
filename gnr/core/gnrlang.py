@@ -20,13 +20,14 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
+import six
+
 import inspect
 import sys
 import imp
 import traceback
 import datetime
 import os.path
-import thread
 import warnings
 import atexit
 import uuid
@@ -109,7 +110,7 @@ class FilterList(list):
 
 def thlocal():
     """TODO"""
-    return thread_ws.setdefault(thread.get_ident(), {})
+    return thread_ws.setdefault(six._thread.get_ident(), {})
 
 
 def boolean(x):
@@ -181,7 +182,7 @@ def debug_call_new(attribute_list=None, print_time=False):
 
     def decore(func):
         def wrapper(*arg, **kw):
-            thread_ident = thread.get_ident()
+            thread_ident = six._thread.get_ident()
             t1 = time.time()
             tloc = thlocal()
             indent = tloc['debug_call_indent'] = tloc.get('debug_call_indent', -1) + 1
@@ -241,7 +242,7 @@ def getUuid():
     \'base64.urlsafe_b64encode\' method.
     """
     return str(base64.urlsafe_b64encode(
-        uuid.uuid3(uuid.uuid1(), str(thread.get_ident())).bytes))[0:22].replace('-', '_')
+        uuid.uuid3(uuid.uuid1(), str(six._thread.get_ident())).bytes))[0:22].replace('-', '_')
 
 
 def safe_dict(d):
@@ -330,11 +331,11 @@ def gnrImport(source, importAs=None, avoidDup=False, silent=True, avoid_module_c
         try:
             module = imp.load_module(segment, module_file, module_path, module_description)
             path = getattr(module, '__path__', None)
-        except SyntaxError, e:
+        except SyntaxError as e:
             raise
-        except ImportError, e:
+        except ImportError as e:
             raise
-        except Exception, e:
+        except Exception as e:
             if not silent:
                 raise
             module = None
@@ -584,7 +585,7 @@ class GnrAddOn(object):
                 importAs = 'abcd'
             compiled = compile(src, importAs, 'exec')
             auxDict = {}
-            exec compiled in auxDict
+            six.exec_(compiled,locals=auxDict,globals=auxDict)
             for name, obj in auxDict.items():
                 self.setCallable(obj, name, bound=bound)
         elif inspect.isfunction(src):
@@ -739,7 +740,7 @@ def setMethodFromText(obj, src, importAs):
     """
     compiled = compile(src, 'xyz', 'exec')
     auxDict = {}
-    exec compiled in auxDict
+    six.exec_(compiled,locals=auxDict,globals=auxDict)
     addBoundCallable(obj, auxDict[importAs], importAs)
 
 
@@ -1139,9 +1140,9 @@ def errorLog(proc_name, host=None, from_address='', to_address=None, user=None, 
 
     ts = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S: ')
     title = '%s - Error in %s' % (ts, proc_name)
-    print title
+    print(title)
     tb_text = errorTxt()
-    print tb_text.encode('ascii', 'ignore')
+    print(tb_text.encode('ascii', 'ignore'))
 
     if (host and to_address):
         try:
@@ -1200,7 +1201,7 @@ def callAsync(call=None, call_args=None, call_kwargs=None, cb=None, cb_args=None
                          cb_args=cb_args, cb_kwargs=cb_kwargs)
     status_dict = dict(running=False, ended=False)
     thread_params['status_dict'] = status_dict
-    thread.start_new_thread(_calledAync, (), thread_params)
+    six._thread.start_new_thread(_calledAync, (), thread_params)
     atexit.register(_waitChild, status_dict=status_dict, exit_timeout=exit_timeout)
 
 
