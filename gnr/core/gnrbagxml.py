@@ -74,31 +74,8 @@ class BagFromXml(object):
         nerror = 0
         if isinstance(source, six.text_type):
             source = source.encode('utf8')
-        while not done:
-            try:
-                result = self.do_build(source, fromFile, catalog=catalog,
+            result = self.do_build(source, fromFile, catalog=catalog,
                                        bagcls=bagcls, empty=empty, testmode=testmode)
-                done = True
-            except sax.SAXParseException:
-                import sys
-
-                l = sys.exc_info()
-                if l[1].args[0] == 'not well-formed (invalid token)':
-                    nerror = nerror + 1
-                    linepos, colpos = (l[1]._locator.getLineNumber() - 1,
-                                       l[1]._locator.getColumnNumber())
-                    if fromFile:
-                        f = open(source, 'r')
-                        source = f.read()
-                        f.close()
-                        fromFile = False
-                    source = source.splitlines(True)
-                    errline = source[linepos]
-                    source[linepos] = errline[:colpos] + errline[colpos + 1:]
-                    source = ''.join(source)
-                    testmode = True
-                else:
-                    raise
         if testmode:
             result = self.do_build(source, fromFile, catalog=catalog, bagcls=bagcls, empty=empty)
         return result
@@ -124,15 +101,15 @@ class BagFromXml(object):
         bagImport.empty = empty
         bagImportError = _SaxImporterError()
         if fromFile:
-            infile = open(source)
+            infile = open(source, 'rt', encoding='utf-8')
             source = infile.read()
             infile.close()
 
-        if isinstance(source, six.text_type):
-            if source.startswith('<?xml'):
-                source = source[source.index('?>') + 2:]
-            source = "<?xml version='1.0' encoding='UTF-8'?>%s" % source.encode('UTF-8')
-        source = re.sub("&(?!([a-zA-Z][a-zA-Z0-9]*|#\d+);)", "&amp;", source)
+        #if isinstance(source, six.text_type):
+        #    if source.startswith('<?xml'):
+        #        source = source[source.index('?>') + 2:]
+        #    source = "<?xml version='1.0' encoding='UTF-8'?>%s" % source.encode('UTF-8')
+        #source = re.sub("&(?!([a-zA-Z][a-zA-Z0-9]*|#\d+);)", "&amp;", source)
         sax.parseString(source, bagImport)
         if not testmode:
             result = bagImport.bags[0][0]
@@ -399,7 +376,7 @@ class BagToXml(object):
                 dirname = os.path.dirname(filename)
                 if dirname and not os.path.exists(dirname):
                     os.makedirs(dirname)
-            output = open(filename, 'w')
+            output = open(filename, 'wt', encoding='utf-8')
             output.write(result)
             output.close()
         return result
@@ -520,7 +497,7 @@ class XmlOutputBag(object):
         self.typevalue = typevalue
         if not output:
             if filepath:
-                output = open(filepath, 'w')
+                output = open(filepath, 'wt', encoding='utf-8')
             else:
                 output = six.StringIO()
         self.output = output
