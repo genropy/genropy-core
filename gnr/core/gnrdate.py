@@ -488,9 +488,9 @@ def toTime(t):
         try:
             return datetime.time(*map(int, t.split(':')))
         except ValueError:
-            raise ValueError, "toTime(%s) unrecognized string format" % repr(t)
+            raise ValueError("toTime(%s) unrecognized string format" % repr(t))
     else:
-        raise ValueError, "toTime(%s) accepts only times, datetimes or strings" % repr(t)
+        raise ValueError("toTime(%s) accepts only times, datetimes or strings" % repr(t))
 
 
 def toDate(date_or_datetime):
@@ -503,7 +503,7 @@ def toDate(date_or_datetime):
     elif isinstance(date_or_datetime, datetime.date):
         return date_or_datetime
     else:
-        raise ValueError, "toDate(%s) accepts only dates or datetimes" % repr(date_or_datetime)
+        raise ValueError("toDate(%s) accepts only dates or datetimes" % repr(date_or_datetime))
 
 
 def dateRange(dstart, dstop):
@@ -622,7 +622,7 @@ class TimeInterval(object):
             elif not start:
                 start = minutes_to_time(time_to_minutes(toTime(stop)) - minutes)
             else:
-                raise ValueError, "TimeInterval() constructor: please specify either 'start' or 'stop' when specifying 'minutes'"
+                raise ValueError("TimeInterval() constructor: please specify either 'start' or 'stop' when specifying 'minutes'")
         if not stop:
             if isinstance(start, TimeInterval):
                 other = start
@@ -635,8 +635,8 @@ class TimeInterval(object):
         self.start = toTime(start)
         self.stop = toTime(stop)
         if self.start >= self.stop:
-            raise ValueError, "TimeInterval(start=%s,stop=%s): start must be earlier than stop" % (
-                repr(start), repr(stop))
+            raise ValueError("TimeInterval(start=%s,stop=%s): start must be earlier than stop" % (
+                repr(start), repr(stop)))
 
     def __str__(self):
         return "%d:%02d-%d:%02d" % (self.start.hour, self.start.minute,
