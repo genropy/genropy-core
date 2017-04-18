@@ -292,9 +292,10 @@ class GnrClassCatalog(object):
                       align='R', empty=0.0)
         self.addParser(float, self.parse_float)
 
-        self.addClass(cls=six.integer_types, key='L', 
+        self.addClass(cls=int, key='L', altcls=list(six.integer_types),
                       aliases=['LONG', 'LONGINT', 'I', 'INT', 'INTEGER'],
                       align='R', empty=0)
+        self.addParser(int, lambda txt: int(txt))
 
         self.addClass(cls=bool, key='B', aliases=['BOOL', 'BOOLEAN'], empty=False)
         self.addParser(bool, lambda txt: (txt.upper() in ['Y', 'TRUE', 'YES', '1']))
