@@ -103,7 +103,6 @@ class TestBasicBag:
 
     def test_keys(self):
         k = self.mybag.keys()
-        print k
         assert k == [u'name', u'surname', u'birthday', u'phone']
 
     def test_values(self):
@@ -234,7 +233,7 @@ class TestBagResolver:
 
     def test_load(self):
         """docstring for test_load"""
-        print self.mybag['connection.info.hostname'] == socket.gethostname()
+        print(self.mybag['connection.info.hostname'] == socket.gethostname())
 
 
 class TestBagFormula:
@@ -265,10 +264,10 @@ class MyResolver(BagResolver):
 
 def testToTree():
     b = Bag()
-    b['alfa'] = Bag(dict(number=1, text='group1', title='alfa', date=datetime.date(2010, 05, 10)))
-    b['beta'] = Bag(dict(number=1, text='group2', title='beta', date=datetime.date(2010, 05, 05)))
-    b['gamma'] = Bag(dict(number=2, text='group1', title='gamma', date=datetime.date(2010, 05, 10)))
-    b['delta'] = Bag(dict(number=2, text='group2', title='delta', date=datetime.date(2010, 05, 05)))
+    b['alfa'] = Bag(dict(number=1, text='group1', title='alfa', date=datetime.date(2010, 5, 10)))
+    b['beta'] = Bag(dict(number=1, text='group2', title='beta', date=datetime.date(2010, 5, 5)))
+    b['gamma'] = Bag(dict(number=2, text='group1', title='gamma', date=datetime.date(2010, 5, 10)))
+    b['delta'] = Bag(dict(number=2, text='group2', title='delta', date=datetime.date(2010, 5, 5)))
     treeBag = b.toTree(group_by=('number', 'text'), caption='title', attributes=('date', 'text'))
 
     expectedStr =\

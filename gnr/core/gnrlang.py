@@ -161,10 +161,10 @@ def debug_call(func):
         tloc = thlocal()
         indent = tloc['debug_call_indent'] = tloc.get('debug_call_indent', -1) + 1
         indent = ' ' * indent
-        print'%sSTART: %s (args:%s, kwargs=%s)' % (indent, func.func_name, args, kwargs)
+        print('%sSTART: %s (args:%s, kwargs=%s)' % (indent, func.func_name, args, kwargs))
         _timer_ = time.time()
         result = func(self, *args, **kwargs)
-        print'%sEND  : %s ms: %.4f' % (indent, func.func_name, (time.time() - _timer_) * 1000)
+        print('%sEND  : %s ms: %.4f' % (indent, func.func_name, (time.time() - _timer_) * 1000))
         tloc['debug_call_indent'] -= 1
         return result
 
@@ -185,22 +185,22 @@ def debug_call_new(attribute_list=None, print_time=False):
             t1 = time.time()
             tloc = thlocal()
             indent = tloc['debug_call_indent'] = tloc.get('debug_call_indent', -1) + 1
-            print'%sSTART: %s in %s (args:%s, kwargs=%s)' % (indent, func.func_name,
-                                                             thread_ident, arg, kw)
+            print('%sSTART: %s in %s (args:%s, kwargs=%s)' % (indent, func.func_name,
+                                                             thread_ident, arg, kw))
             if attribute_list:
                 values_dict = dict(map(lambda a: (a, getattr(arg[0], a, None)), attribute_list))
-                print values_dict
-            print'%sEND  : %s' % (indent, func.func_name)
+                print (values_dict)
+            print('%sEND  : %s' % (indent, func.func_name))
             res = func(*arg, **kw)
             t2 = time.time()
             if print_time:
-                print '-' * 80
-                print '%s took %0.3f ms' % (func.func_name, (t2 - t1) * 1000.0)
-                print 10 * ' ' + 28 * '-' + 'args' + 28 * '-' + 10 * ' '
-                print arg
-                print 10 * ' ' + 27 * '-' + 'kwargs' + 27 * '-' + 10 * ' '
-                print kw or (hasattr(arg[0], 'kwargs') and arg[0].kwargs)
-                print '-' * 80
+                print('-' * 80)
+                print('%s took %0.3f ms' % (func.func_name, (t2 - t1) * 1000.0))
+                print(10 * ' ' + 28 * '-' + 'args' + 28 * '-' + 10 * ' ')
+                print(arg)
+                print(10 * ' ' + 27 * '-' + 'kwargs' + 27 * '-' + 10 * ' ')
+                print(kw or (hasattr(arg[0], 'kwargs') and arg[0].kwargs))
+                print('-' * 80)
             return res
         return wrapper
 
@@ -221,13 +221,13 @@ def timer_call(time_list=None, print_time=True):
             res = func(*arg, **kw)
             t2 = time.time()
             if print_time:
-                print '-' * 80
-                print '%s took %0.3f ms' % (func.func_name, (t2 - t1) * 1000.0)
-                print 10 * ' ' + 28 * '-' + 'args' + 28 * '-' + 10 * ' '
-                print arg
-                print 10 * ' ' + 27 * '-' + 'kwargs' + 27 * '-' + 10 * ' '
-                print kw or (hasattr(arg[0], 'kwargs') and arg[0].kwargs)
-                print '-' * 80
+                print ('-' * 80)
+                print ('%s took %0.3f ms' % (func.func_name, (t2 - t1) * 1000.0))
+                print (10 * ' ' + 28 * '-' + 'args' + 28 * '-' + 10 * ' ')
+                print (arg)
+                print (10 * ' ' + 27 * '-' + 'kwargs' + 27 * '-' + 10 * ' ')
+                print (kw or (hasattr(arg[0], 'kwargs') and arg[0].kwargs))
+                print ('-' * 80)
             time_list.append((func.func_name, (t2 - t1) * 1000.0))
             return res
 
