@@ -1,3 +1,4 @@
 flake8==3.3.0
 pytz==2017.2
-babel=2.4.0
+babel==2.4.0
+python-dateutil==2.6.0
