@@ -218,9 +218,4 @@ class GnrNumericDict(GnrDict):
 
 
 if __name__ == '__main__':
-    a = GnrDict([('pino', 55), ('gionni', 88)], ugo=56, mario=False)
-    print a.get('#1')
-    try:
-        print a['gvhjf hvj']
-    except:
-        print 36
+    pass
