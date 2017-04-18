@@ -15,11 +15,12 @@ class TestBasicBag:
         b['name'] = 'John'
         b['surname'] = 'Doe'
         b['birthday'] = datetime.date(1974, 11, 23)
+        b['weight'] = 90
         b['phone'] = Bag()
-        b['phone'].setItem('office', 555450210)
-        b.setItem('phone.home', 555345670, private=True)
-        b.setItem('phone.mobile', 555230450, sim='vadophone', fbplayer='gattuso')
-        b.addItem('phone.mobile', 444230450, sim='tom') #add is used for multiple keys
+        b['phone'].setItem('office', '555450210')
+        b.setItem('phone.home', '555345670', private=True)
+        b.setItem('phone.mobile', '555230450', sim='vadophone', fbplayer='gattuso')
+        b.addItem('phone.mobile', '444230450', sim='tom') #add is used for multiple keys
         #b.toXml('data/testbag.xml')
 
         assert b == self.mybag
@@ -55,10 +56,11 @@ class TestBasicBag:
         assert 'name' in Bag(BAG_DATA)
 
     def test_getItem(self):
-        assert self.mybag['phone.home'] == 555345670
+        assert self.mybag['weight'] == 90
+        assert self.mybag['phone.home'] == '555345670'
         assert self.mybag['#1'] == 'Doe'
-        assert self.mybag['phone.#3'] == 444230450
-        assert self.mybag['phone.#sim=tom'] == 444230450
+        assert self.mybag['phone.#3'] == '444230450'
+        assert self.mybag['phone.#sim=tom'] == '444230450'
 
     def test_setItemPos(self):
         b = Bag({'a': 1, 'b': 2, 'c': 3, 'd': 4})
@@ -103,7 +105,7 @@ class TestBasicBag:
 
     def test_keys(self):
         k = self.mybag.keys()
-        assert k == [u'name', u'surname', u'birthday', u'phone']
+        assert k == [u'name', u'surname', 'birthday', 'weight', u'phone']
 
     def test_values(self):
         v = self.mybag.values()
@@ -132,7 +134,7 @@ class TestBasicBag:
         myattr = self.mybag['phone'].digest('#a')
         assert myattr[2]['fbplayer'] == 'gattuso'
         result = self.mybag.digest('phone:#a.sim,#v', condition=lambda node: node.getAttr('sim') is not None)
-        assert result == [('vadophone', 555230450), ('tom', 444230450)]
+        assert result == [('vadophone', '555230450'), ('tom', '444230450')]
 
     def test_analyze(self):
         """docstring for test_analyze"""
