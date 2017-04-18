@@ -1,28 +1,27 @@
 # -*- coding: UTF-8 -*-
-#--------------------------------------------------------------------------
+# --------------------------------------------------------------------------
 # package       : Genropy core - see LICENSE for details
 # module gnrbag : an advanced data storage system
-# Copyright (c) : 2004 - 2017 Softwell sas - Milano 
+# Copyright (c) : 2004 - 2017 Softwell sas - Milano
 # Written by    : Giovanni Porcari, Michele Bertoldi
 #                 Saverio Porcari, Francesco Porcari
-#--------------------------------------------------------------------------
-#This library is free software; you can redistribute it and/or
-#modify it under the terms of the GNU Lesser General Public
-#License as published by the Free Software Foundation; either
-#version 2.1 of the License, or (at your option) any later version.
+# --------------------------------------------------------------------------
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
 
-#This library is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-#Lesser General Public License for more details.
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
 
-#You should have received a copy of the GNU Lesser General Public
-#License along with this library; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 
-"""
-Some useful operations on lists.
+"""Some useful operations on lists.
 """
 from gnr.core.gnrlang import GnrException
 from gnr.core.gnrdecorator import deprecated
@@ -39,21 +38,25 @@ class FakeList(list):
 def findByAttr(l, **kwargs):
     """Find elements in the ``l`` list having attributes with names and values as
     kwargs items. Return the list's attributes
-    
-    :param l: the list"""
+
+    :param l: the list
+    """
     result = list(l)
     for k, v in kwargs.items():
         result = [x for x in result if getattr(x, k, None) == v]
     return result
-    
+
+
 def sortByItem(l, *args, **kwargs):
     """Sort the list ``l``, filled of objects with dict interface by items with key in ``*args``.
     Return the list
-    
+
     :param l: the list
-    :param args: a list of keys to sort for. Each key can be reverse sorted by adding ``:d`` to the key.
+    :param args: a list of keys to sort for. Each key can be reverse sorted by adding ``:d`` to
+                 the key.
     :param hkeys: if ``True`` and a key contains ``.``, then it is interpreted as a hierarchical
-                  path and sub dict are looked for"""
+                  path and sub dict are looked for
+    """
     def safeCmp(a, b):
         if a is None:
             if b is None:
@@ -63,15 +66,16 @@ def sortByItem(l, *args, **kwargs):
             return 1
         else:
             return cmp(a, b)
-            
+
     def hGetItem(obj, attr):
-        if obj is None: return None
+        if obj is None:
+            return None
         if not '.' in attr:
             return obj.get(attr, None)
         else:
             curr, next = attr.split('.', 1)
             return hGetAttr(obj.get(curr, None), next)
-            
+
     criteria = []
     rev = False
     for crit in list(args):
@@ -85,13 +89,15 @@ def sortByItem(l, *args, **kwargs):
                 rev = not rev
         criteria = [(crit, rev, caseInsensitive)] + criteria
     hkeys = kwargs.get('hkeys', False)
-        
+
     for crit, rev, caseInsensitive in criteria:
         if caseInsensitive:
             if '.' in crit and hkeys:
-                l.sort(lambda a, b: safeCmp((hGetItem(a, crit) or '').lower(), (hGetItem(b, crit) or '').lower()))
+                l.sort(lambda a, b: safeCmp((hGetItem(a, crit) or '').lower(),
+                                            (hGetItem(b, crit) or '').lower()))
             else:
-                l.sort(lambda a, b: safeCmp((a.get(crit, None) or '').lower(), (b.get(crit, None) or '').lower()))
+                l.sort(lambda a, b: safeCmp((a.get(crit, None) or '').lower(),
+                                            (b.get(crit, None) or '').lower()))
         else:
             if '.' in crit and hkeys:
                 l.sort(lambda a, b: safeCmp(hGetItem(a, crit), hGetItem(b, crit)))
@@ -100,14 +106,17 @@ def sortByItem(l, *args, **kwargs):
         if(rev):
             l.reverse()
     return l
-        
+
+
 def sortByAttr(l, *args):
     """TODO
-    
-    :param l: the list"""
+
+    :param l: the list
+    """
     # da verificare
     def hGetAttr(obj, attr):
-        if obj is None: return None
+        if obj is None:
+            return None
         if not '.' in attr:
             return getattr(obj, attr, None)
         else:
@@ -118,7 +127,8 @@ def sortByAttr(l, *args):
     criteria.reverse()
     for crit in criteria:
         rev = None
-        if ':' in crit: crit, rev = crit.split(':', 1)
+        if ':' in crit:
+            crit, rev = crit.split(':', 1)
         if '.' in crit:
             l.sort(lambda a, b: cmp(hGetAttr(a, crit), hGetAttr(b, crit)))
         else:
@@ -126,6 +136,7 @@ def sortByAttr(l, *args):
         if rev:
             l.reverse()
     return l
+
 
 def merge(*args):
     """TODO"""
@@ -135,19 +146,20 @@ def merge(*args):
             if not el in result:
                 result.append(el)
     return result
-        
+
+
 def readTab(doc):
     """Read a "tab delimited" file.
-    
+
     The :meth:`readCSV()` method was misnamed (read not only CSV files) but must be left for legacy
-    
+
     :param doc: the file to read
     """
     if isinstance(doc, basestring):
         f = open(doc)
     else:
         f = doc
-        
+
     txt = f.read()
     txt = txt.replace('\r\n', '\n')
     txt = txt.replace('\r', '\n')
@@ -156,26 +168,28 @@ def readTab(doc):
     u = [line.split('\t') for line in lines]
     headers = u[0]
     rows = u[1:]
-    
+
     index = dict([(k, i) for i, k in enumerate(headers)])
-    
+
     ncols = len(headers)
     for row in rows:
-        if len(row) == ncols: # it works only for rows with the same length of header
+        if len(row) == ncols:  # it works only for rows with the same length of header
             yield GnrNamedList(index, row)
-            
+
     if isinstance(doc, basestring):
         f.close()
-        
+
+
 def readCSV_new(doc):
     """This reads a CSV file - done by Jeff
-    
-    :param doc: the file to read"""
+
+    :param doc: the file to read
+    """
     if isinstance(doc, basestring):
         f = open(doc)
     else:
         f = doc
-        
+
     txt = f.read()
     txt = txt.replace('\r\n', '\n')
     txt = txt.replace('\r', '\n')
@@ -187,26 +201,28 @@ def readCSV_new(doc):
     u = [line.split('\t') for line in lines]
     headers = u[0]
     rows = u[1:]
-    
+
     index = dict([(k, i) for i, k in enumerate(headers)])
-    
+
     ncols = len(headers)
     for row in rows:
-        if len(row) == ncols: # it works only for rows with the same length of header
+        if len(row) == ncols:  # it works only for rows with the same length of header
             yield GnrNamedList(index, row)
-            
+
     if isinstance(doc, basestring):
         f.close()
-        
+
+
 def readCSV(doc):
     """read a CSV file
-    
-    :param doc: the file to read"""
+
+    :param doc: the file to read
+    """
     if isinstance(doc, basestring):
         f = open(doc)
     else:
         f = doc
-        
+
     txt = f.read()
     txt = txt.replace('\r\n', '\n')
     txt = txt.replace('\r', '\n')
@@ -218,40 +234,44 @@ def readCSV(doc):
     index = dict([(k, i) for i, k in enumerate(headers)])
     ncols = len(headers)
     for row in rows:
-        if len(row) == ncols: # it works only for rows with the same length of header
+        if len(row) == ncols:  # it works only for rows with the same length of header
             yield GnrNamedList(index, row)
-            
+
     if isinstance(doc, basestring):
         f.close()
-        
+
+
 def readXLS(doc):
     """Read an XLS file
-    
-    :param doc: the file to read"""
+
+    :param doc: the file to read
+    """
     import xlrd
-    
+
     if isinstance(doc, basestring):
         filename = doc
         file_contents = None
     else:
         filename = None
         file_contents = doc.read()
-        
+
     book = xlrd.open_workbook(filename=filename, file_contents=file_contents)
     sheet = book.sheet_by_index(0)
-    
+
     headers = [sheet.cell_value(0, c) for c in range(sheet.ncols)]
     headers = [h for h in headers if h]
-    
+
     index = dict([(k, i) for i, k in enumerate(headers)])
-    
+
     ncols = len(headers)
     for r in range(1, sheet.nrows):
         row = [sheet.cell_value(r, c) for c in range(ncols)]
         yield GnrNamedList(index, row)
-        
+
+
 class XlsReader(object):
     """Read an XLS file"""
+
     def __init__(self, docname):
         import xlrd
         import os.path
@@ -265,43 +285,43 @@ class XlsReader(object):
         self.sheet = self.book.sheet_by_index(0)
         self.linegen = self.sheetlines()
         firstline = self.linegen.next()
-        headers = [slugify(firstline[c],sep='_') for c in range(self.sheet.ncols)]
-        self.colindex = dict([(i,True)for i,h in enumerate(headers) if h])
+        headers = [slugify(firstline[c], sep='_') for c in range(self.sheet.ncols)]
+        self.colindex = dict([(i, True)for i, h in enumerate(headers) if h])
         self.headers = [h for h in headers if h]
         self.index = dict()
-        for i,k in enumerate(self.headers):
+        for i, k in enumerate(self.headers):
             if k in self.index:
                 raise GnrException('Duplicated columns in source xls')
             self.index[k] = i
         self.ncols = len(headers)
         self.nrows = self.sheet.nrows - 1
 
-
     def sheetlines(self):
         for lineno in range(self.sheet.nrows):
             line = self.sheet.row_values(lineno)
-            if filter(lambda elem: elem,line):
+            if filter(lambda elem: elem, line):
                 row_types = self.sheet.row_types(lineno)
-                for i,c in enumerate(line):
+                for i, c in enumerate(line):
                     if row_types[i] == self.XL_CELL_DATE:
-                        line[i] = datetime.datetime(*self.xldate_as_tuple(c,self.sheet.book.datemode))
-                yield line 
-        
+                        line[i] = datetime.datetime(
+                            *self.xldate_as_tuple(c, self.sheet.book.datemode))
+                yield line
+
     def __call__(self):
         for line in self.linegen:
-            #row = [self.sheet.cell_value(r, c) for c in range(self.ncols)]
-            yield GnrNamedList(self.index, [c for i,c in enumerate(line) if i in self.colindex])
-            
+            yield GnrNamedList(self.index, [c for i, c in enumerate(line) if i in self.colindex])
+
 
 class CsvReader(object):
     """Read an csv file"""
+
     def __init__(self, docname):
         import os.path
         self.docname = docname
         self.dirname = os.path.dirname(docname)
         self.basename, self.ext = os.path.splitext(os.path.basename(docname))
         self.ext = self.ext.replace('.', '')
-        self.filecsv = open(docname,'r')
+        self.filecsv = open(docname, 'r')
         self.rows = csv.reader(self.filecsv)
         self.headers = self.rows.next()
         self.index = dict([(k, i) for i, k in enumerate(self.headers)])
@@ -311,46 +331,32 @@ class CsvReader(object):
         for r in self.rows:
             yield GnrNamedList(self.index, r)
         self.filecsv.close()
-            
+
+
 class GnrNamedList(object):
-    """Row object. Allow access to data by column name. Allow also to add columns and alter data."""
+    """Row object. Allow access to data by column name. Allow also to add columns and
+    alter data.
+    """
+
     def __init__(self, index, values=None):
         self._index = index
         if values is None:
             self._list = [None] * len(index)
         else:
             self._list = values
-            
+
     def __getitem__(self, x):
-        if not isinstance(x,(int,slice)):
+        if not isinstance(x, (int, slice)):
             x = self._index[x]
         try:
             return self._list.__getitem__(x)
         except:
             if x > len(self._index):
                 raise
-                
+
     def __contains__(self, what):
         return what in self._index
-        
-    #def __getattribute__(self, x):
-    #    if type(x) != int:
-    #        x = self._index[x]
-    #    try:
-    #        return list.__getattribute__(self, x)
-    #    except:
-    #        if x > len(self._index):
-    #            raise
 
-    #def __delattr__(self,x):
-    #    if type(x) != int:
-    #        x = self._index[x]
-    #    try:
-    #        return list.__delattr__(self, x)
-    #    except:
-    #        if x > len(self._index):
-    #            raise
-        
     def __setitem__(self, x, v):
         if not isinstance(x, int):
             n = self._index.get(x)
@@ -359,7 +365,7 @@ class GnrNamedList(object):
                 self._index[x] = n
             x = n
         try:
-            self._list.__setitem__(x,v)
+            self._list.__setitem__(x, v)
         except:
             n = len(self._index)
             if x > n:
@@ -367,10 +373,10 @@ class GnrNamedList(object):
             else:
                 self._list.extend([None] * (n - len(self)))
                 self._list[x] = v
-                
+
     def __str__(self):
         return '[%s]' % ','.join(['%s=%s' % (k, v) for k, v in self.items()])
-        
+
     def __repr__(self):
         return '[%s]' % ','.join(['%s=%s' % (k, v) for k, v in self.items()])
 
@@ -380,24 +386,25 @@ class GnrNamedList(object):
     def __iter__(self):
         return self._list.__iter__()
 
-
     def get(self, x, default=None):
         """Same of ``get`` method's dict
-        
+
         :param x: TODO
-        :param default: the value returned if ``self[x]`` is ``None``"""
+        :param default: the value returned if ``self[x]`` is ``None``
+        """
         try:
             return self[x]
         except:
             return default
-            
+
     def has_key(self, x):
         """Same of ``has_key`` method's dict. Return ``True`` if the key is in the dict,
         ``False`` otherwise
-        
-        :param x: the key to test"""
+
+        :param x: the key to test
+        """
         return self._index.has_key(x)
-        
+
     def items(self):
         """Same of ``items`` method's dict"""
         items = self._index.items()
@@ -405,14 +412,14 @@ class GnrNamedList(object):
         for k, v in items:
             result[v] = (k, self[v])
         return result
-        
+
     def iteritems(self):
         """Same of ``iteritems`` method's dict"""
         items = self._index.items()
         result = [None] * len(items)
         for k, v in items:
             yield (k, self[v])
-            
+
     def keys(self):
         """Same of ``keys`` method's dict"""
         items = self._index.items()
@@ -420,13 +427,14 @@ class GnrNamedList(object):
         for k, v in items:
             result[v] = k
         return result
-        
+
     @deprecated(message='do not use pop in named tuple')
-    def pop(self, x,dflt=None):
+    def pop(self, x, dflt=None):
         """Same of ``pop`` method's dict
-        
+
         :param x: TODO
-        :param dflt: TODO"""
+        :param dflt: TODO
+        """
         if type(x) != int:
             x = self._index[x]
         try:
@@ -434,35 +442,37 @@ class GnrNamedList(object):
         except:
             if x > len(self._index):
                 raise
-                
+
     def update(self, d):
         """Same of ``update`` method's dict
-        
+
         :param d: the dict to update
         """
         for k, v in d.items():
             self[k] = v
-            
+
     def values(self):
         """Same of ``values`` method's dict"""
         return tuple(self._list + [None] * (len(self._index) - len(self)))
-        
+
     def extractItems(self, columns):
         """It is a utility method of the sql :meth:`fetch() <gnr.sql.gnrsqldata.SqlQuery.fetch()>`
         method. It returns a list of namedlist (that is, a list of dictionaries).
-        
-        :param columns: the items of the namedlist dict"""
+
+        :param columns: the items of the namedlist dict
+        """
         if columns:
             return [(k, self[k]) for k in columns]
         else:
             return self.items()
-            
+
     def extractValues(self, columns):
         """It is a utility method of the sql :meth:`fetch() <gnr.sql.gnrsqldata.SqlQuery.fetch()>`
         method. It returns a list of namedlist (that is, a list of dictionaries).
-        
-        :param columns: the values of the namedlist dict"""
+
+        :param columns: the values of the namedlist dict
+        """
         if columns:
             return [self[k] for k in columns]
         else:
-            return self.values()     
+            return self.values()
