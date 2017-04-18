@@ -20,6 +20,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
+import six
 
 import datetime
 
@@ -366,8 +367,7 @@ def getKeywords(sourcedict, keyword, locale=None):
     return result
 
 
-TYPES_LOCALIZERS_DICT = {int: localize_number,
-                         long: localize_number,
+TYPES_LOCALIZERS_DICT = {six.integer_types: localize_number,
                          float: localize_number,
                          datetime.date: localize_date,
                          datetime.datetime: localize_datetime,
@@ -377,8 +377,7 @@ TYPES_LOCALIZERS_DICT = {int: localize_number,
 
                          }
 
-TYPES_LOCALPARSERS_DICT = {int: parselocal_number,
-                           long: parselocal_number,
+TYPES_LOCALPARSERS_DICT = {six.integer_types: parselocal_number,
                            float: parselocal_float,
                            datetime.date: parselocal_date,
                            datetime.datetime: parselocal_datetime,
