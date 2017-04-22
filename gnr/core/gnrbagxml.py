@@ -25,6 +25,7 @@ import re
 import os
 import datetime
 
+from io import open
 from xml import sax
 from xml.sax import saxutils
 
@@ -69,18 +70,14 @@ class BagFromXml(object):
         """
         if not bagcls:
             bagcls = Bag
-        done = False
-        testmode = False
-        nerror = 0
-        if isinstance(source, six.text_type):
+        if six.PY2 and isinstance(source, unicode):
             source = source.encode('utf8')
-            result = self.do_build(source, fromFile, catalog=catalog,
-                                       bagcls=bagcls, empty=empty, testmode=testmode)
-        if testmode:
-            result = self.do_build(source, fromFile, catalog=catalog, bagcls=bagcls, empty=empty)
+        result = self.do_build(source, fromFile, catalog=catalog,
+                                       bagcls=bagcls, empty=empty)
         return result
 
-    def do_build(self, source, fromFile, catalog=None, bagcls=Bag, empty=None, testmode=False):
+
+    def do_build(self, source, fromFile, catalog=None, bagcls=Bag, empty=None):
         """TODO
 
         :param source: TODO
@@ -90,34 +87,23 @@ class BagFromXml(object):
         :param empty: TODO
         :param testmode: TODO
         """
-        if not testmode:
-            bagImport = _SaxImporter()
-        else:
-            bagImport = sax.handler.ContentHandler()
+        bagImport = _SaxImporter()
         if not catalog:
             catalog = gnrclasses.GnrClassCatalog()
         bagImport.catalog = catalog
         bagImport.bagcls = bagcls
         bagImport.empty = empty
-        bagImportError = _SaxImporterError()
         if fromFile:
-            infile = open(source, 'rt', encoding='utf-8')
+            infile = open(source, 'rt')
             source = infile.read()
             infile.close()
-
-        #if isinstance(source, six.text_type):
-        #    if source.startswith('<?xml'):
-        #        source = source[source.index('?>') + 2:]
-        #    source = "<?xml version='1.0' encoding='UTF-8'?>%s" % source.encode('UTF-8')
-        #source = re.sub("&(?!([a-zA-Z][a-zA-Z0-9]*|#\d+);)", "&amp;", source)
         sax.parseString(source, bagImport)
-        if not testmode:
-            result = bagImport.bags[0][0]
-            if bagImport.format == 'GenRoBag':
-                result = result['GenRoBag']
-            if result == None:
-                result = []
-            return result
+        result = bagImport.bags[0][0]
+        if bagImport.format == 'GenRoBag':
+            result = result['GenRoBag']
+        if result is None:
+            result = []
+        return result
 
 
 class _SaxImporterError(sax.handler.ErrorHandler):
@@ -365,7 +351,8 @@ class BagToXml(object):
             result = result + \
                 self.buildTag('GenRoBag', self.bagToXmlBlock(
                     bag, namespaces=[]), xmlMode=True, localize=False)
-        result = unicode(result).encode(encoding, 'replace')
+        if six.PY2:
+            result = unicode(result).encode(encoding, 'replace')
         if pretty:
             from xml.dom.minidom import parseString
             result = parseString(result)
@@ -409,7 +396,8 @@ class BagToXml(object):
                 if isinstance(value, BagAsXml):
                     print(x)
                 try:
-                    value = value.decode()
+                    if six.PY2:
+                        value = value.decode('UTF-8')
                 except Exception as e:
                     raise e
         if attributes:
