@@ -526,8 +526,9 @@ def asDict(myString, itemSep=',', argSep='=', symbols=None):
     for item in itemList:
         item = item.strip().strip(itemSep)
         key, value = split(item, argSep)
-
-        key = key.strip().encode()
+        key = key.strip()
+        if six.PY2:
+            key = key.encode()
         value = value.strip()
         if value.startswith("'"):
             result[key] = value.strip("'")
