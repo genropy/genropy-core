@@ -286,13 +286,16 @@ class GnrClassCatalog(object):
         from gnr.core.gnrbag import Bag
 
         self.addClass(cls=six.text_type, key='T', aliases=[
-                      'TEXT', 'P', 'A'], altcls=[basestring, str], empty='')
+                      'TEXT', 'P', 'A'], empty='')
 
-        self.addClass(cls=float, key='R', aliases=['REAL', 'FLOAT', 'F'], align='R', empty=0.0)
+        self.addClass(cls=float, key='R', aliases=['REAL', 'FLOAT', 'F'], 
+                      align='R', empty=0.0)
         self.addParser(float, self.parse_float)
 
-        self.addClass(cls=int, key='L', aliases=['LONG', 'LONGINT', 'I', 'INT', 'INTEGER'],
-                      altcls=list(six.integer_types), align='R', empty=0)
+        self.addClass(cls=int, key='L', altcls=list(six.integer_types),
+                      aliases=['LONG', 'LONGINT', 'I', 'INT', 'INTEGER'],
+                      align='R', empty=0)
+        self.addParser(int, lambda txt: int(txt))
 
         self.addClass(cls=bool, key='B', aliases=['BOOL', 'BOOLEAN'], empty=False)
         self.addParser(bool, lambda txt: (txt.upper() in ['Y', 'TRUE', 'YES', '1']))

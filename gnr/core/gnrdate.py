@@ -33,6 +33,8 @@ from gnr.core.gnrstring import splitAndStrip, anyWordIn, wordSplit, toText
 from dateutil import rrule
 from babel import dates
 
+from gnr.core import six
+
 logger = logging.getLogger(__name__)
 
 
@@ -202,8 +204,8 @@ def decodeOneDate(datestr, workdate=None, months=None, days=None, quarters=None,
 
         # quarter
         elif anyWordIn(quarters.keys(), datestr):
-            qt, year = splitAndStrip(datestr, sep=' ', n=1, fixed=2)
-            year = yearDecode(year)
+            qt = anyWordIn(quarters.keys(), datestr)[0]
+            year = yearDecode(datestr.replace(qt,''))
             qt = quarters[qt]
             dateStart = (year, qt * 3 - 2)
             if isEndPeriod:
@@ -484,13 +486,13 @@ def toTime(t):
         return t.time()
     elif isinstance(t, datetime.time):
         return t
-    elif isinstance(t, basestring):
+    elif isinstance(t, six.string_types):
         try:
             return datetime.time(*map(int, t.split(':')))
         except ValueError:
-            raise ValueError, "toTime(%s) unrecognized string format" % repr(t)
+            raise ValueError("toTime(%s) unrecognized string format" % repr(t))
     else:
-        raise ValueError, "toTime(%s) accepts only times, datetimes or strings" % repr(t)
+        raise ValueError("toTime(%s) accepts only times, datetimes or strings" % repr(t))
 
 
 def toDate(date_or_datetime):
@@ -503,7 +505,7 @@ def toDate(date_or_datetime):
     elif isinstance(date_or_datetime, datetime.date):
         return date_or_datetime
     else:
-        raise ValueError, "toDate(%s) accepts only dates or datetimes" % repr(date_or_datetime)
+        raise ValueError("toDate(%s) accepts only dates or datetimes" % repr(date_or_datetime))
 
 
 def dateRange(dstart, dstop):
@@ -544,7 +546,6 @@ def time_to_minutes(t):
     """
     return t.hour * 60 + t.minute
 
-
 def minutes_to_time(mins):
     """Returns a datetime.time given the number of minutes since midnight
 
@@ -553,362 +554,9 @@ def minutes_to_time(mins):
     >>> minutes_to_time(480)
     datetime.time(8, 0)
     """
-    hours = mins / 60
+    hours = mins // 60
     mins = mins % 60
     return datetime.time(hours, mins)
-
-
-class TimeInterval(object):
-    """A span of time (start, end).
-
-    You can create TimeIntervals from ``datetime.time`` objects or strings:
-
-    >>> from datetime import time
-    >>> TimeInterval(time(8,30),time(10,30))
-    TimeInterval('8:30-10:30')
-    >>> TimeInterval('8:30-10:30')
-    TimeInterval('8:30-10:30')
-    >>> start = time(8,30)
-    >>> stop = time(10,30)
-    >>> tup = (start,stop)
-    >>> TimeInterval(start,stop) == TimeInterval( tup )
-    True
-    >>> TimeInterval((start, '10:30'))
-    TimeInterval('8:30-10:30')
-
-    You can also create them supplying their length and their start or stop time:
-
-    >>> TimeInterval(start='8:30',minutes=60)
-    TimeInterval('8:30-9:30')
-    >>> TimeInterval(stop='9:30',minutes=60)
-    TimeInterval('8:30-9:30')
-
-    As you can see, str() and repr() are both implemented in a sensible way.
-
-    Several operators are available:
-
-    ============ ==================================================
-      Operator    Meaning
-    ============ ==================================================
-      a < b       a ends before b starts
-      a <= b      a starts before or when b starts
-      a > b       b ends before a starts
-      a >= b      b starts before or when a ends
-      a == b      a.start == b.start and a.stop == b.stop
-      a in b      a overlaps b
-    ============ ==================================================
-
-    All of these operators accept as their second parameter a TimeInterval or a string
-    (or a tuple of datetime.time or strings)
-
-    >>> a = TimeInterval('8:30-10:30')
-    >>> b = TimeInterval('10:00-12:00')
-    >>> a < b
-    False
-    >>> a <= b
-    True
-    >>> a == b
-    False
-    >>> a == a
-    True
-    >>> a in b
-    True
-    """
-
-    def __init__(self, start=None, stop=None, minutes=None):
-        if minutes:
-            if not stop:
-                stop = minutes_to_time(time_to_minutes(toTime(start)) + minutes)
-            elif not start:
-                start = minutes_to_time(time_to_minutes(toTime(stop)) - minutes)
-            else:
-                raise ValueError, "TimeInterval() constructor: please specify either 'start' or 'stop' when specifying 'minutes'"
-        if not stop:
-            if isinstance(start, TimeInterval):
-                other = start
-                start = other.start
-                stop = other.stop
-            elif isinstance(start, basestring):
-                (start, sep, stop) = start.partition('-')
-            else:
-                start, stop = start
-        self.start = toTime(start)
-        self.stop = toTime(stop)
-        if self.start >= self.stop:
-            raise ValueError, "TimeInterval(start=%s,stop=%s): start must be earlier than stop" % (
-                repr(start), repr(stop))
-
-    def __str__(self):
-        return "%d:%02d-%d:%02d" % (self.start.hour, self.start.minute,
-                                    self.stop.hour, self.stop.minute)
-
-    def __repr__(self):
-        return "TimeInterval(%s)" % repr(str(self))
-
-    def __eq__(self, other):
-        if not isinstance(other, TimeInterval):
-            try:
-                other = TimeInterval(other)
-            except ValueError:
-                return NotImplemented
-        return (self.start == other.start) and (self.stop == other.stop)
-
-    def __ne__(self, other):
-        return not (self == other)
-
-    def __lt__(self, other):
-        """Test if 'self' ends earlier than 'other' starts.
-
-        This is, test the following condition::
-
-            [self]
-                [other]
-        """
-        if not isinstance(other, TimeInterval):
-            try:
-                other = TimeInterval(other)
-            except ValueError:
-                return NotImplemented
-        return self.stop < other.start
-
-    def __le__(self, other):
-        """Test if 'self' starts earlier than or when 'other' starts *and* 'self' ends
-        earlier than or when 'other' ends.
-
-        This is, test the following condition::
-
-            [self]
-                [other]
-        """
-        if not isinstance(other, TimeInterval):
-            try:
-                other = TimeInterval(other)
-            except ValueError:
-                return NotImplemented
-        return (self.start <= other.start) and (self.stop <= other.stop)
-
-    @staticmethod
-    def cmp(one, other):
-        """Compare two TimeIntervals
-
-        It guarantees total order (while the other TimeInterval's comparison operators do not)
-        """
-        if not isinstance(one, TimeInterval):
-            one = TimeInterval(one)
-        if not isinstance(other, TimeInterval):
-            other = TimeInterval(other)
-        return cmp(one.start, other.start) and cmp(one.stop, other.stop)
-
-    @staticmethod
-    def sorted(iterable):
-        """Sort TimeIntervals.
-
-        Guarantees total order.
-
-        >>> ti = TimeInterval('9:00-10:00')
-        >>> tp = TimePeriod('8:00-12:00')
-        >>> tp.remove(ti)
-        >>> tp
-        TimePeriod('8:00-9:00, 10:00-12:00')
-        >>> lst = [ti] + tp.intervals
-        >>> TimeInterval.sorted(lst)
-        [TimeInterval('8:00-9:00'), TimeInterval('9:00-10:00'), TimeInterval('10:00-12:00')]
-        """
-        return sorted(iterable, cmp=TimeInterval.cmp)
-
-    def __contains__(self, other):
-        """Test if 'other' overlaps with us."""
-        if not isinstance(other, TimeInterval):
-            try:
-                other = TimeInterval(other)
-            except ValueError:
-                return NotImplemented
-        return (self.start <= other.stop) and (other.start <= self.stop)
-
-    NO_OVERLAP = 0
-    FULLY_CONTAINS = -1
-    FULLY_CONTAINED = 1
-    COVER_LEFT = -2
-    COVER_RIGHT = 2
-
-    def overlaps(self, other):
-        """Checks if *other* attribute overlaps with this interval
-
-        Returns a constant describing the relationship between ``self`` and ``other``:
-        TimeInterval.xxx where xxx is ``NO_OVERLAP``, ``FULLY_CONTAINED``, ``FULLY_CONTAINS``,
-        ``COVER_RIGHT`` or ``COVER_LEFT``
-
-        :param other: a TimeInterval or a string represting it
-        """
-        if not isinstance(other, TimeInterval):
-            other = TimeInterval(other)
-        if self < other or self > other:
-            return TimeInterval.NO_OVERLAP
-
-        if (self.start <= other.start):
-            if self.stop < other.stop:
-                return TimeInterval.COVER_LEFT
-            else:
-                return TimeInterval.FULLY_CONTAINS
-        else:
-            if self.stop > other.stop:
-                return TimeInterval.COVER_RIGHT
-            else:
-                return TimeInterval.FULLY_CONTAINED
-
-    @property
-    def minutes(self):
-        """The duration of this TimeInterval in minutes from the start"""
-        return (self.stop.hour * 60 + self.stop.minute) - \
-            (self.start.hour * 60 + self.start.minute)
-
-    @minutes.setter
-    def minutes(self, value):
-        mins = self.start.hour * 60 + self.start.minute + value
-        hours = mins / 60
-        mins = mins % 60
-        self.stop = datetime.time(hours, mins)
-
-
-class TimePeriod(object):
-    """A non-overlapping set of TimeIntervals.
-
-    You can create a TimePeriod by calling the constructor with:
-
-        - zero or more TimeIntervals, or their string representations;
-        - a comma separated string of TimeInterval's string representations.
-
-    You can add or remove intervals to a TimePeriod.
-
-    >>> p = TimePeriod('8:00-12:00','16:00-20:00')
-    >>> for i in ('8:00-9:00','9:30-10:00','10:00-11:30','16:00-16:30','17:00-18:00','18:00-19:00','19:00-20:00'): p.remove(i)
-    >>> str(p)
-    '9:00-9:30, 11:30-12:00, 16:30-17:00'
-
-    If you attach custom attributes to your TimeIntervals (or if you derive your own
-    subclasses), they are preserved when intervals are sliced:
-
-    >>> iv1 = TimeInterval('8:00-12:00')
-    >>> iv1.name = 'morning'
-    >>> iv2 = TimeInterval('16:00-20:00')
-    >>> iv2.name = 'afternoon'
-    >>> p = TimePeriod(iv1,iv2)
-    >>> for i in ('8:00-9:00','9:30-10:00','10:00-11:30','16:00-16:30','17:00-18:00','18:00-19:00','19:00-20:00'): p.remove(i)
-    >>> str(p)
-    '9:00-9:30, 11:30-12:00, 16:30-17:00'
-    >>> [i.name for i in p.intervals]
-    ['morning', 'morning', 'afternoon']
-
-    TimePeriod also supports ``len()``, ``iter()`` and getitem operations
-    """
-
-    def __init__(self, *intervals):
-        self._intervals = []
-        if len(intervals) == 1:
-            iv = intervals[0]
-            if isinstance(iv, basestring):
-                intervals = [s.strip() for s in iv.split(',')]
-        for interval in intervals:
-            self.add(interval)
-
-    def add(self, item):
-        """Add the new TimeInterval or a TimePeriod.
-
-        If it overlaps with any existing interval in this TimePeriod, they'll be merged
-
-        :param item: TimeInterval or TimePeriod or string
-        """
-        if isinstance(item, TimePeriod):
-            intervals = item.intervals
-        else:
-            intervals = [item]
-        for interval in intervals:
-            if not isinstance(interval, TimeInterval):
-                new = TimeInterval(interval)
-            else:
-                new = interval
-            left = bisect.bisect_left(self._intervals, new)
-            merged = new
-            right = left
-            while right < len(self._intervals):
-                existing = self._intervals[right]
-                if merged in existing:
-                    merged.start = min(merged.start, existing.start)
-                    merged.stop = max(merged.stop, existing.stop)
-                    right += 1
-                else:
-                    break
-            self._intervals[left:right] = [merged]
-
-    def remove(self, item):
-        """Remove a TimeInterval or a TimePeriod.
-
-        Overlapping intervals will be adjusted
-
-        :param item: TimeInterval or TimePeriod
-        """
-        if isinstance(item, TimePeriod):
-            intervals = item.intervals
-        else:
-            intervals = [item]
-        for interval in intervals:
-            if not isinstance(interval, TimeInterval):
-                removed = TimeInterval(interval)
-            else:
-                removed = interval
-            left = bisect.bisect_left(self._intervals, removed)
-            right = left
-            while right < len(self._intervals):
-                existing = self._intervals[right]
-                o = removed.overlaps(existing)
-                if (o == TimeInterval.FULLY_CONTAINS):
-                    del self._intervals[right]
-                elif o == TimeInterval.FULLY_CONTAINED:
-                    if removed.start == existing.start:
-                        existing.start = removed.stop
-                        right += 1
-                    elif removed.stop == existing.stop:
-                        existing.stop = removed.start
-                        right += 1
-                    else:
-                        second_half = copy.copy(existing)
-                        existing.stop = removed.start
-                        second_half.start = removed.stop
-                        self._intervals.insert(right + 1, second_half)
-                        right += 2
-                elif o == TimeInterval.COVER_LEFT:
-                    existing.start = removed.stop
-                    right += 1
-                elif o == TimeInterval.COVER_RIGHT:
-                    existing.stop = removed.start
-                    right += 1
-                else:
-                    break  # NO_OVERLAP, we're done
-
-    def __str__(self):
-        return ", ".join(map(str, self._intervals))
-
-    def __repr__(self):
-        return "TimePeriod(%s)" % repr(str(self))
-
-    def __len__(self):
-        return len(self._intervals)
-
-    def __getitem__(self, key):
-        return self._intervals[key]
-
-    def __eq__(self, other):
-        """Check if a TimePeriod is equal to another."""
-        if not isinstance(other, TimePeriod):
-            other = TimePeriod(other)
-        return self._intervals == other.intervals
-
-    @property
-    def intervals(self):
-        """Returns the intervals in this TimePeriod"""
-        # make a shallow copy, so they can't mess with the ordering of intervals
-        return copy.copy(self._intervals)
-
 
 def seconds_to_text(seconds):
     """Convert number of seconds to a string
@@ -938,6 +586,4 @@ def seconds_to_text(seconds):
 
 
 if __name__ == '__main__':
-    import doctest
-
-    doctest.testmod()
+    pass

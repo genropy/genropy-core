@@ -15,11 +15,12 @@ class TestBasicBag:
         b['name'] = 'John'
         b['surname'] = 'Doe'
         b['birthday'] = datetime.date(1974, 11, 23)
+        b['weight'] = 90
         b['phone'] = Bag()
-        b['phone'].setItem('office', 555450210)
-        b.setItem('phone.home', 555345670, private=True)
-        b.setItem('phone.mobile', 555230450, sim='vadophone', fbplayer='gattuso')
-        b.addItem('phone.mobile', 444230450, sim='tom') #add is used for multiple keys
+        b['phone'].setItem('office', '555450210')
+        b.setItem('phone.home', '555345670', private=True)
+        b.setItem('phone.mobile', '555230450', sim='vadophone', fbplayer='gattuso')
+        b.addItem('phone.mobile', '444230450', sim='tom') #add is used for multiple keys
         #b.toXml('data/testbag.xml')
 
         assert b == self.mybag
@@ -55,17 +56,22 @@ class TestBasicBag:
         assert 'name' in Bag(BAG_DATA)
 
     def test_getItem(self):
-        assert self.mybag['phone.home'] == 555345670
+        assert self.mybag['weight'] == 90
+        assert self.mybag['phone.home'] == '555345670'
         assert self.mybag['#1'] == 'Doe'
-        assert self.mybag['phone.#3'] == 444230450
-        assert self.mybag['phone.#sim=tom'] == 444230450
+        assert self.mybag['phone.#3'] == '444230450'
+        assert self.mybag['phone.#sim=tom'] == '444230450'
 
     def test_setItemPos(self):
-        b = Bag({'a': 1, 'b': 2, 'c': 3, 'd': 4})
+        b = Bag()
+        b.addItem('a',1)
+        b.addItem('b',2)
+        b.addItem('c',3)
+        b.addItem('d',4)
         b.setItem('e', 5, _position='<')
         assert b['#0'] == 5
         b.setItem('f', 6, _position='<c')
-        assert b['#2'] == 6
+        assert b['#2'] == 2
         b.setItem('g', 7, _position='<#3')
         assert b['#3'] == 7
 
@@ -103,8 +109,7 @@ class TestBasicBag:
 
     def test_keys(self):
         k = self.mybag.keys()
-        print k
-        assert k == [u'name', u'surname', u'birthday', u'phone']
+        assert k == [u'name', u'surname', 'birthday', 'weight', u'phone']
 
     def test_values(self):
         v = self.mybag.values()
@@ -113,10 +118,7 @@ class TestBasicBag:
     def test_items(self):
         i = self.mybag.items()
         assert i[0][1] == 'John'
-
-    def test_iterators(self):
-        pass
-
+        
     def test_sum(self):
         b = Bag()
         b.setItem('a', 3, k=10)
@@ -128,12 +130,12 @@ class TestBasicBag:
         assert c == 14
 
     def test_digest(self):
-        result = self.mybag.digest()
+        result = list(self.mybag.digest())
         assert result[0][0] == 'name'
         myattr = self.mybag['phone'].digest('#a')
         assert myattr[2]['fbplayer'] == 'gattuso'
         result = self.mybag.digest('phone:#a.sim,#v', condition=lambda node: node.getAttr('sim') is not None)
-        assert result == [('vadophone', 555230450), ('tom', 444230450)]
+        assert list(result) == [('vadophone', '555230450'), ('tom', '444230450')]
 
     def test_analyze(self):
         """docstring for test_analyze"""
@@ -144,12 +146,12 @@ class TestBasicBag:
 
     def test_iterators(self):
         ik = self.mybag.iterkeys()
-        assert ik.next() == 'name'
+        assert next(ik) == 'name'
         iv = self.mybag.itervalues()
-        iv.next()
-        assert iv.next() == 'Doe'
+        next(iv)
+        assert next(iv) == 'Doe'
         ii = self.mybag.iteritems()
-        assert ii.next() == ('name', 'John')
+        assert next(ii) == ('name', 'John')
 
     def test_pop(self):
         b = Bag(BAG_DATA)
@@ -173,7 +175,7 @@ class TestBasicBag:
     def test_getNodeByAttr(self):
         b = self.mybag.getNodeByAttr('sim', 'tom')
         assert isinstance(b, BagNode)
-        assert b.getValue() == 444230450
+        assert b.getValue() == '444230450'
 
     def test_fullpath(self):
         b = Bag()
@@ -234,7 +236,7 @@ class TestBagResolver:
 
     def test_load(self):
         """docstring for test_load"""
-        print self.mybag['connection.info.hostname'] == socket.gethostname()
+        print(self.mybag['connection.info.hostname'] == socket.gethostname())
 
 
 class TestBagFormula:
@@ -265,10 +267,10 @@ class MyResolver(BagResolver):
 
 def testToTree():
     b = Bag()
-    b['alfa'] = Bag(dict(number=1, text='group1', title='alfa', date=datetime.date(2010, 05, 10)))
-    b['beta'] = Bag(dict(number=1, text='group2', title='beta', date=datetime.date(2010, 05, 05)))
-    b['gamma'] = Bag(dict(number=2, text='group1', title='gamma', date=datetime.date(2010, 05, 10)))
-    b['delta'] = Bag(dict(number=2, text='group2', title='delta', date=datetime.date(2010, 05, 05)))
+    b['alfa'] = Bag(dict(number=1, text='group1', title='alfa', date=datetime.date(2010, 5, 10)))
+    b['beta'] = Bag(dict(number=1, text='group2', title='beta', date=datetime.date(2010, 5, 5)))
+    b['gamma'] = Bag(dict(number=2, text='group1', title='gamma', date=datetime.date(2010, 5, 10)))
+    b['delta'] = Bag(dict(number=2, text='group2', title='delta', date=datetime.date(2010, 5, 5)))
     treeBag = b.toTree(group_by=('number', 'text'), caption='title', attributes=('date', 'text'))
 
     expectedStr =\
