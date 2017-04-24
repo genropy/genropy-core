@@ -261,7 +261,7 @@ class MyResolver(BagResolver):
             result['ip'] = 'unknown'
 
         result['pid'] = os.getpid()
-        result['user'] = os.getenv('USER')
+        result['user'] = os.getenv('USER', '[none]')
         result['ID'] = result['ip'] + '-' + str(result['pid']) + '-' + result['user']
         return result
 
