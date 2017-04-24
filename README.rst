@@ -1,3 +1,7 @@
+.. image:: https://badges.gitter.im/genropy/genropy-core.svg
+   :alt: Join the chat at https://gitter.im/genropy/genropy-core
+   :target: https://gitter.im/genropy/genropy-core?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
 Genropy Core
 ============
 
