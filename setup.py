@@ -1,64 +1,55 @@
-from __future__ import print_function
-from setuptools.command.test import test as TestCommand
-from setuptools import setup, find_packages
-import sys
 import os
+import sys
+from setuptools import setup, find_packages
 
 
 _local_dir = os.path.abspath(os.path.dirname(__file__))
 
 
-#
-# http://pytest.org/dev/goodpractises.html
-#   #integration-with-setuptools-test-commands
-#
-class RunTests(TestCommand):
-    user_options = [('pytest-args=', 'a', "Arguments to pass to py.test")]
-
-    def initialize_options(self):
-        TestCommand.initialize_options(self)
-        self.pytest_args = []
-
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = ['--verbose', '--strict', '--tb=long', 'tests']
-        self.test_suite = True
-
-    def run_tests(self):
-        # import here, cause outside the eggs aren't loaded
-        import pytest
-        errno = pytest.main(self.test_args)
-        sys.exit(errno)
+def read_file(filename):
+    abs_path = os.path.join(_local_dir, filename)
+    with open(abs_path, mode='rt') as f:
+        return f.read()
 
 
-#
-# pull_request #5
-readme_rst_path = os.path.join(_local_dir, 'README.rst')
-if os.path.isfile(readme_rst_path):
-    long_description = open(readme_rst_path)
-else:
-    long_description = open(os.path.join(_local_dir, 'README.md'))
+about = {}
+exec(read_file(os.path.join('gnr', '__about__.py')), about)
+
+needs_pytest = {'pytest', 'test'}.intersection(sys.argv)
+pytest_runner = ['pytest_runner'] if needs_pytest else []
 
 
 setup(
-    name='Genropy-core',
-    version='0.0.1',
-    url='http://www.genropy.org/',
-    author='Genropy',
-    author_email='info@genropy.org',
-    description=('''An insanely fast way to create
- Single Page Applications in python. Core package'''),
-    long_description=long_description,
-    license='LGPL',
-
-    tests_require=['pytest'],
-    cmdclass={'test': RunTests},
-
+    name=about['__title__'],
+    version=about['__version__'],
+    author=about['__author__'],
+    author_email=about['__email__'],
+    description=about['__summary__'],
+    url=about['__uri__'],
+    license=about['__license__'],
+    long_description=read_file('README.rst'),
     packages=find_packages(),
-    # install_requires=['...']
-    zip_safe=False,
+
+    setup_requires=[
+        # Environment markers were implemented and stabilized in setuptools
+        # v20.8.1 (see <http://stackoverflow.com/a/32643122/391865>).
+        'setuptools>=20.8.1',
+        # If line above doesn't work, check that you have at least
+        # setuptools v19.4 (released 2016-01-16):
+        # <https://github.com/pypa/setuptools/issues/141>
+    ] + pytest_runner,
+    tests_require=['pytest'],
+    test_suite='tests',
+
+    install_requires=[
+        'pytz',
+        'babel',
+        'python-dateutil',
+    ],
+    zip_safe=True,
+
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
+        'Development Status ::  3 - Alpha',
         'Environment :: Web Environment',
         'Framework :: Genropy',
         'Intended Audience :: Developers',
