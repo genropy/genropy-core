@@ -18,7 +18,7 @@ Contribution Guide
 ~~~~~~~~~~~~~~~~~~
 
 Read our `contribution
-guidelines <https://github.com/pfurini/genropy-core/blob/master/CONTRIBUTING.md>`__
+guidelines <https://github.com/genropy/genropy-core/blob/master/CONTRIBUTING.md>`__
 to learn about our development process, how to propose fixes and
 improvements, and how to test your changes before submitting a pull
 request.
@@ -38,8 +38,8 @@ Then follow the instructions in one or more of the following sections.
 Running tests with tox
 ^^^^^^^^^^^^^^^^^^^^^^
 
-First, install `tox` with pip in your user install directory (you could run this
-inside a `virtualenv`, and it is the recommended approach, as always):
+First, install :code:`tox` with pip in your user install directory (you could run
+this inside a virtualenv, and it is the recommended approach, as always):
 
 ::
 
@@ -73,8 +73,8 @@ virtualenv, created from one of the supported Python versions. To debug the sour
 under more than one Python version, you'll need to create one virtualenv for each
 version.
 
-In the following steps, substitute `path_to_python_interpreter` with the full path
-of one of your installed Python binaries, and `venv_name` with a new virtualenv
+In the following steps, substitute :code:`path_to_python_interpreter` with the full path
+of one of your installed Python binaries, and :code:`venv_name` with a new virtualenv
 name. We suggest using some tool to aid in the management of your virtual environments
 (for example `virtualenvwrapper <https://virtualenvwrapper.readthedocs.io/en/latest/>`_).
 
@@ -88,7 +88,8 @@ name. We suggest using some tool to aid in the management of your virtual enviro
 
 Please note that these steps are not required if you only need to run tests. In that
 case follow the steps in the `Running tests with tox
-<https://github.com/pfurini/genropy-core/blob/master/README.rst#running-tests-with-tox>`__ section.
+<https://github.com/genropy/genropy-core/blob/master/README.rst#running-tests-with-tox>`__
+section.
 
 Original License
 ----------------
