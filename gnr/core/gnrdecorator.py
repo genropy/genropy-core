@@ -82,13 +82,13 @@ def timer_call(time_list=[], print_time=True):
             res = func(*arg, **kw)
             t2 = time()
             if print_time:
-                print '-' * 80
-                print '%s took %0.3f ms' % (func.func_name, (t2 - t1) * 1000.0)
-                print 10 * ' ' + 28 * '-' + 'args' + 28 * '-' + 10 * ' '
-                print arg
-                print 10 * ' ' + 27 * '-' + 'kwargs' + 27 * '-' + 10 * ' '
-                print kw or (hasattr(arg[0], 'kwargs') and arg[0].kwargs)
-                print '-' * 80
+                print('-' * 80)
+                print('%s took %0.3f ms' % (func.func_name, (t2 - t1) * 1000.0))
+                print(10 * ' ' + 28 * '-' + 'args' + 28 * '-' + 10 * ' ')
+                print(arg)
+                print(10 * ' ' + 27 * '-' + 'kwargs' + 27 * '-' + 10 * ' ')
+                print(kw or (hasattr(arg[0], 'kwargs') and arg[0].kwargs))
+                print('-' * 80)
             time_list.append((func.func_name, (t2 - t1) * 1000.0))
             return res
 
@@ -103,7 +103,7 @@ def time_cost():
             t1 = time()
             res = func(*arg, **kw)
             t2 = time()
-            print '%s took %0.3f ms' % (func.func_name, (t2 - t1) * 1000.0)
+            print ('%s took %0.3f ms' % (func.func_name, (t2 - t1) * 1000.0))
             return res
         return wrapper
     return decore

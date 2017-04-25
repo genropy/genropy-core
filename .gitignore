@@ -48,5 +48,6 @@ docs/_build/
 
 # PyBuilder
 target/
-.idea
 tests/.cache
+.idea/inspectionProfiles
+.idea

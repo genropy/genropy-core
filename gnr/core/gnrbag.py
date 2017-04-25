@@ -382,7 +382,7 @@ class BagNode(object):
 
     def asTuple(self):
         """TODO"""
-        return (self.label, self.value, self.attr, self.resolver)
+        return self.label, self.value, self.attr, self.resolver
 
     def addValidator(self, validator, parameterString):
         """Set a new validator into the BagValidationList of the node.
@@ -659,17 +659,14 @@ class Bag(GnrObject):
                 what = what.strip().lower()
                 reverse = (not (mode.strip().lower() in ('a', 'asc', '>')))
                 if what == '#k':
-                    self._nodes.sort(lambda a, b: cmp(
-                        a.label.lower(), b.label.lower()), reverse=reverse)
+                    self._nodes.sort(key=lambda n: n.label.lower(), reverse=reverse)
                 elif what == '#v':
-                    self._nodes.sort(lambda a, b: cmp(a.value, b.value), reverse=reverse)
+                    self._nodes.sort(key=lambda n: n.value, reverse=reverse)
                 elif what.startswith('#a'):
                     attrname = what[3:]
-                    self._nodes.sort(lambda a, b: cmp(a.getAttr(attrname),
-                                                      b.getAttr(attrname)), reverse=reverse)
+                    self._nodes.sort(key=lambda n: n.getAttr(attrname), reverse=reverse)
                 else:
-                    self._nodes.sort(lambda a, b: cmp(
-                        a.value[what], b.value[what]), reverse=reverse)
+                    self._nodes.sort(key=lambda n: n.value[what], reverse=reverse)
         return self
 
     def sum(self, what='#v'):
@@ -817,9 +814,11 @@ class Bag(GnrObject):
                     innerBagStr = 'visited at :%s' % exploredNodes[el_id]
                 else:
                     exploredNodes[el_id] = el.label
+                    strvalue = value.__str__(exploredNodes, mode=mode)
+                    if six.PY2:
+                        strvalue = unicode(strvalue)
                     innerBagStr = '\n'.join(["    %s" % (line,)
-                                             for line in six.u(
-                        value.__str__(exploredNodes, mode=mode)).split('\n')])
+                                             for line in strvalue.split('\n')])
                 outlist.append(innerBagStr)
             else:
                 currtype = str(type(value)).split(" ")[1][1:][:-2]
@@ -2033,7 +2032,10 @@ class Bag(GnrObject):
                 return originalsource, False, 'unknown'  # short string of unknown type
         urlobj = six.moves.urllib.request.urlopen(source)
         info = urlobj.info()
-        contentType = info.gettype().lower()
+        if six.PY2:
+            contentType = info.gettype().lower()
+        else:
+            contentType = info.get_content_type()
         if 'xml' in contentType or 'html' in contentType:
             return urlobj.read(), False, 'xml'  # it is an url of type xml
         return source, False, 'direct'  # urlresolver

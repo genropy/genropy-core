@@ -20,6 +20,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
+import six
 
 import datetime
 
@@ -53,16 +54,17 @@ def localize(obj, format=None, currency=None, locale=None):
 
 
 def formatHandler(obj):
-    if isinstance(obj, basestring) and '::' in obj:
+    if isinstance(obj, six.string_types) and '::' in obj:
         obj, dtype = obj.rsplit('::', 1)
     else:
+
         dtype = type(obj)
     if dtype == 'HTML':
         obj = '%s::HTML' % obj
     return obj, TYPES_LOCALIZERS_DICT.get(dtype)
 
 
-def localize_number(obj, locale, format=None, currency=None):
+def localize_number(obj, locale, format=None, currency=None,**kwargs):
     """TODO
 
     :param obj: TODO
@@ -78,8 +80,7 @@ def localize_number(obj, locale, format=None, currency=None):
             else:
                 format = '%s;%s' % (flist[0], flist[1])
         if currency:
-            print currency
-            return numbers.format_currency(obj, currency=currency, format=format, locale=locale)
+            return numbers.format_currency(obj, currency=currency, format=format, locale=locale, currency_digits=not format)
         else:
             return numbers.format_decimal(obj, format=format, locale=locale)
     else:
@@ -139,14 +140,14 @@ def localize_img(value, locale, format=None, **kwargs):
     if format == 'img':
         return """<img src="%s"/>""" % value
     cropper_zoom = None
-    if isinstance(format, basestring) and format.startswith('auto'):
+    if isinstance(format, six.string_types) and format.startswith('auto'):
         cropper_zoom = float(format.split(':')[1]) if ':' in format else None
         if '?' in value:
             value, format = value.split('?')
             format = format.replace('=', ':').replace('&', ',').replace('v_', '')
         else:
             format = dict()
-    if isinstance(format, basestring):
+    if isinstance(format, six.string_types):
         format = dict([p.split(':') for p in format.split(',')])
     format.update(kwargs)
     cropper = '%s'
@@ -355,36 +356,36 @@ def getKeywords(sourcedict, keyword, locale=None):
     if not keydict and len(locale) > 2:  # like en_us
         keydict = sourcedict.get(locale[:2], {})
 
-    if isinstance(keyword, basestring):
+    if isinstance(keyword, six.string_types):
         keyword = [keyword]
     result = []
     for k in keyword:
         kloc = keydict.get(k, k)
-        if isinstance(kloc, basestring):
+        if isinstance(kloc, six.string_types):
             result.append(kloc)
         else:
             result.extend(kloc)
     return result
 
 
-TYPES_LOCALIZERS_DICT = {int: localize_number,
-                         long: localize_number,
-                         float: localize_number,
+TYPES_LOCALIZERS_DICT = {float: localize_number,
                          datetime.date: localize_date,
                          datetime.datetime: localize_datetime,
                          datetime.time: localize_time,
                          bool: localize_boolean,
                          'P': localize_img
-
                          }
 
-TYPES_LOCALPARSERS_DICT = {int: parselocal_number,
-                           long: parselocal_number,
-                           float: parselocal_float,
+
+TYPES_LOCALPARSERS_DICT = {float: parselocal_float,
                            datetime.date: parselocal_date,
                            datetime.datetime: parselocal_datetime,
-                           datetime.time: parselocal_time
-                           }
+                           datetime.time: parselocal_time}
+for k in six.integer_types:
+    TYPES_LOCALIZERS_DICT[k] = localize_number
+    TYPES_LOCALPARSERS_DICT[k] = parselocal_number
+
+
 DEFAULT_FORMATS_DICT = {'R': '0.00', 'D': 'short'}
 
 DATEKEYWORDS = {
