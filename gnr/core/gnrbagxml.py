@@ -97,6 +97,8 @@ class BagFromXml(object):
             infile = open(source, 'rt')
             source = infile.read()
             infile.close()
+        if six.PY34 and isinstance(source,str):
+            source = source.encode('utf8')
         sax.parseString(source, bagImport)
         result = bagImport.bags[0][0]
         if bagImport.format == 'GenRoBag':
