@@ -44,6 +44,7 @@ setup(
     install_requires=[
         'pytz',
         'babel',
+        'future',
         'python-dateutil',
     ],
     zip_safe=True,

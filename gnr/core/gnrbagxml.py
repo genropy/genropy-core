@@ -414,7 +414,7 @@ class BagToXml(object):
                                    if isinstance(v, six.string_types) or
                                    (type(v) in six.integer_types + (float,
                                                                     datetime.date, datetime.time, datetime.datetime,
-                                                                    bool, type(None), list, tuple, dict, Decimal)) or (six.callable(v) and
+                                                                    bool, type(None), list, tuple, dict, Decimal)) or (callable(v) and
                                                                                                                        (hasattr(v, 'is_rpc') or hasattr(v, '__safe__') or
                                                                                                                         (hasattr(v, '__name__') and v.__name__.startswith('rpc_')))
                                                                                                                        )])
