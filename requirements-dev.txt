@@ -1,4 +1,6 @@
 tox==2.7.0
+pytest==3.0.7
+future==0.16.0
 flake8==3.3.0
 docutils==0.13.1
 pytz==2017.2
